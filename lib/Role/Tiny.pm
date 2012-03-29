@@ -40,7 +40,8 @@ sub _load_module {
 sub import {
   my $target = caller;
   my $me = shift;
-  strictures->import;
+  strict->import;
+  warnings->import(FATAL => 'all');
   return if $INFO{$target}; # already exported into this package
   # get symbol table reference
   my $stash = do { no strict 'refs'; \%{"${target}::"} };
