@@ -1,3 +1,5 @@
+  - Split Role::Tiny out into its own dist
+
 Changes below this line are from when Role::Tiny was still bundled with Moo:
 
   - Fix a bug where coercions weren't called on lazy default/builder returns
