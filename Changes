@@ -1,3 +1,4 @@
+  - Minor doc fix to does_role
   - Split Role::Tiny out into its own dist
 
 Changes below this line are from when Role::Tiny was still bundled with Moo:

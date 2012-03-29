@@ -342,7 +342,7 @@ Returns true if class has been composed with role.
 This subroutine is also installed as ->does on any class a Role::Tiny is
 composed into unless that class already has an ->does method, so
 
-  if ($foo->does_role('Some::Role')) {
+  if ($foo->does('Some::Role')) {
     ...
   }
 
