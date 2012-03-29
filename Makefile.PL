@@ -9,36 +9,15 @@ my %BUILD_DEPS = (
   'Test::Fatal' => 0.003,
 );
 
-my %RUN_DEPS = (
-  'Class::Method::Modifiers' => 1.07,
-  'strictures' => 1.001001,
-  'Module::Runtime' => 0.013,
-);
-
 # have to do this since old EUMM dev releases miss the eval $VERSION line
 my $mymeta_works = do { no warnings; $ExtUtils::MakeMaker::VERSION >= 6.5707 };
-my $mymeta = do { no warnings; $ExtUtils::MakeMaker::VERSION >= 6.5702 };
 
 WriteMakefile(
-  NAME => 'Moo',
-  VERSION_FROM => 'lib/Moo.pm',
+  NAME => 'Role-Tiny',
+  VERSION_FROM => 'lib/Role/Tiny.pm',
   PREREQ_PM => {
-    %RUN_DEPS,
     ($] >= 5.010 ? () : ('MRO::Compat' => 0)),
     ($mymeta_works ? () : (%BUILD_DEPS)),
   },
-  ($mymeta_works
-    ? ( # BUILD_REQUIRES makes MYMETA right, requires stops META being wrong
-        BUILD_REQUIRES => \%BUILD_DEPS,
-        META_ADD => { requires => \%RUN_DEPS }
-      )
-    : ( # META_ADD both to get META right - only Makefile written
-        META_ADD => {
-          requires => \%RUN_DEPS,
-          build_requires => \%BUILD_DEPS,
-        }
-      )
-  ),
-  ($mymeta && !$mymeta_works ? (NO_MYMETA => 1) : ()),
-  LICENSE => 'perl',
+  $mymeta_works ? (BUILD_REQUIRES => \%BUILD_DEPS) : (),
 );
