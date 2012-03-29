@@ -1,3 +1,4 @@
+  - Remove redundant code in create_class_with_roles
   - Minor doc fix to does_role
   - Split Role::Tiny out into its own dist
 

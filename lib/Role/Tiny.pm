@@ -114,7 +114,7 @@ sub create_class_with_roles {
 
   foreach my $role (@roles) {
     _load_module($role);
-    die "${role} is not a Role::Tiny" unless my $info = $INFO{$role};
+    die "${role} is not a Role::Tiny" unless $INFO{$role};
   }
 
   if ($] >= 5.010) {
@@ -127,7 +127,7 @@ sub create_class_with_roles {
 
   *{_getglob("${new_name}::ISA")} = [ @composable, $superclass ];
 
-  my @info = map +($INFO{$_} ? $INFO{$_} : ()), @roles;
+  my @info = map $INFO{$_}, @roles;
 
   $me->_check_requires(
     $new_name, $compose_name,
