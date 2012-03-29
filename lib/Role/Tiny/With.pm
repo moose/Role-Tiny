@@ -35,11 +35,11 @@ provides a C<with> function to compose such roles.
 
 =head1 AUTHORS
 
-See L<Moo> for authors.
+See L<Role::Tiny> for authors.
 
 =head1 COPYRIGHT AND LICENSE
 
-See L<Moo> for the copyright and license.
+See L<Role::Tiny> for the copyright and license.
 
 =cut
 

@@ -6,6 +6,9 @@ sub _getstash { \%{"$_[0]::"} }
 use strict;
 use warnings FATAL => 'all';
 
+our $VERSION = '1.000000'; # 1.0.0
+$VERSION = eval $VERSION;
+
 our %INFO;
 our %APPLIED_TO;
 our %COMPOSED;
@@ -381,12 +384,38 @@ documentation.
 See L<< Class::Method::Modifiers/after method(s) => sub { ... } >> for full
 documentation.
 
-=head1 AUTHORS
+=head1 AUTHOR
 
-See L<Moo> for authors.
+mst - Matt S. Trout (cpan:MSTROUT) <mst@shadowcat.co.uk>
 
-=head1 COPYRIGHT AND LICENSE
+=head1 CONTRIBUTORS
 
-See L<Moo> for the copyright and license.
+dg - David Leadbeater (cpan:DGL) <dgl@dgl.cx>
+
+frew - Arthur Axel "fREW" Schmidt (cpan:FREW) <frioux@gmail.com>
+
+hobbs - Andrew Rodland (cpan:ARODLAND) <arodland@cpan.org>
+
+jnap - John Napiorkowski (cpan:JJNAPIORK) <jjn1056@yahoo.com>
+
+ribasushi - Peter Rabbitson (cpan:RIBASUSHI) <ribasushi@cpan.org>
+
+chip - Chip Salzenberg (cpan:CHIPS) <chip@pobox.com>
+
+ajgb - Alex J. G. Burzyński (cpan:AJGB) <ajgb@cpan.org>
+
+doy - Jesse Luehrs (cpan:DOY) <doy at tozt dot net>
+
+perigrin - Chris Prather (cpan:PERIGRIN) <chris@prather.org>
+
+=head1 COPYRIGHT
+
+Copyright (c) 2010-2012 the Role::Tiny L</AUTHOR> and L</CONTRIBUTORS>
+as listed above.
+
+=head1 LICENSE
+
+This library is free software and may be distributed under the same terms
+as perl itself.
 
 =cut
