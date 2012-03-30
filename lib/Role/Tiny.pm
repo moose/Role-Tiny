@@ -158,11 +158,13 @@ sub _composable_package_for {
   ) {
     push @mod_base, "sub ${modified} { shift->next::method(\@_) }";
   }
+  my $e;
   {
     local $@;
     eval(my $code = join "\n", "package ${base_name};", @mod_base);
-    die "Evaling failed: $@\nTrying to eval:\n${code}" if $@;
+    $e = "Evaling failed: $@\nTrying to eval:\n${code}" if $@;
   }
+  die $e if $e;
   $me->_install_modifiers($composed_name, $modifiers);
   $COMPOSED{role}{$composed_name} = 1;
   return $composed_name;
