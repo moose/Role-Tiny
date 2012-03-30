@@ -252,7 +252,7 @@ sub does_role {
 
 =head1 NAME
 
-Role::Tiny - Roles. Like a nouvelle cusine portion size slice of Moose.
+Role::Tiny - Roles. Like a nouvelle cuisine portion size slice of Moose.
 
 =head1 SYNOPSIS
 
