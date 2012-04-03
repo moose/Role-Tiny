@@ -1,3 +1,6 @@
+  - Document that Class::Method::Modifiers must be depended on separately
+  - Add a SEE ALSO section
+
 1.000000 - 2012-03-29
   - Remove redundant code in create_class_with_roles
   - Minor doc fix to does_role

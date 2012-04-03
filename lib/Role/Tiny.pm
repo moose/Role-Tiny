@@ -266,6 +266,8 @@ Role::Tiny - Roles. Like a nouvelle cuisine portion size slice of Moose.
 
  sub bar { ... }
 
+ around baz => sub { ... }
+
  1;
 
 else where
@@ -279,7 +281,12 @@ else where
 
  sub foo { ... }
 
+ # baz is wrapped in the around modifier by Class::Method::Modifiers
+ sub baz { ... }
+
  1;
+
+If you wanted attributes as well, look at L<Moo::Role>.
 
 =head1 DESCRIPTION
 
@@ -373,6 +380,11 @@ at a time to allow the code to remain as simple as possible.
 See L<< Class::Method::Modifiers/before method(s) => sub { ... } >> for full
 documentation.
 
+Note that since you are not required to use method modifiers,
+L<Class::Method::Modifiers> is lazily loaded and we do not declare it as
+a dependency. If your L<Role::Tiny> role uses modifiers you must depend on
+both L<Class::Method::Modifiers> and L<Role::Tiny>.
+
 =head2 around
 
  around foo => sub { ... };
@@ -380,12 +392,32 @@ documentation.
 See L<< Class::Method::Modifiers/around method(s) => sub { ... } >> for full
 documentation.
 
+Note that since you are not required to use method modifiers,
+L<Class::Method::Modifiers> is lazily loaded and we do not declare it as
+a dependency. If your L<Role::Tiny> role uses modifiers you must depend on
+both L<Class::Method::Modifiers> and L<Role::Tiny>.
+
 =head2 after
 
  after foo => sub { ... };
 
 See L<< Class::Method::Modifiers/after method(s) => sub { ... } >> for full
 documentation.
+
+Note that since you are not required to use method modifiers,
+L<Class::Method::Modifiers> is lazily loaded and we do not declare it as
+a dependency. If your L<Role::Tiny> role uses modifiers you must depend on
+both L<Class::Method::Modifiers> and L<Role::Tiny>.
+
+=head1 SEE ALSO
+
+L<Role::Tiny> is the attribute-less subset of L<Moo::Role>; L<Moo::Role> is
+a meta-protocol-less subset of the king of role systems, L<Moose::Role>.
+
+If you don't want method modifiers and do want to be forcibly restricted
+to a single role application per class, Ovid's L<Role::Basic> exists. But
+Stevan Little (the L<Moose> author) and I are both still convinced that
+he's Doing It Wrong.
 
 =head1 AUTHOR
 
