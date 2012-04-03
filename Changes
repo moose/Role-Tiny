@@ -1,4 +1,5 @@
   - Document that Class::Method::Modifiers must be depended on separately
+  - Update tests so that they skip correctly without C::M::M
   - Add a SEE ALSO section
 
 1.000000 - 2012-03-29
