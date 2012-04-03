@@ -10,8 +10,6 @@ BEGIN {
 
   requires qw(req1 req2);
 
-  around foo => sub { my $orig = shift; join ' ', 'role foo', $orig->(@_) };
-
   sub bar { 'role bar' }
 
   sub baz { 'role baz' }
@@ -61,20 +59,12 @@ BEGIN {
   sub extra1 { 'role extra' }
 }
 
-BEGIN {
-  package BrokenRole;
-  use Role::Tiny;
-
-  around 'broken modifier' => sub { my $orig = shift; $orig->(@_) };
-}
-
 sub try_apply_to {
   my $to = shift;
   exception { Role::Tiny->apply_role_to_package($to, 'MyRole') }
 }
 
 is(try_apply_to('MyClass'), undef, 'role applies cleanly');
-is(MyClass->foo, 'role foo class foo', 'method modifier');
 is(MyClass->bar, 'role bar', 'method from role');
 is(MyClass->baz, 'class baz', 'method from class');
 ok(MyClass->does('MyRole'), 'class does role');
@@ -101,10 +91,6 @@ is exception {
 
 isa_ok($new_class, 'MyClass');
 is($new_class->extra1, 'role extra', 'method from role');
-
-ok(exception {
-    $new_class = Role::Tiny->create_class_with_roles('MyClass', 'BrokenRole');
-}, 'exception caught creating class with broken modifier in a role');
 
 done_testing;
 
