@@ -1,3 +1,5 @@
+  - Add composition with tests stolen from Role::Basic
+
 1.000001 - 2012-04-03
   - Document that Class::Method::Modifiers must be depended on separately
   - Update tests so that they skip correctly without C::M::M
