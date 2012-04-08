@@ -56,8 +56,7 @@ sub import {
     push @{$INFO{$target}{requires}||=[]}, @_;
   };
   *{_getglob "${target}::with"} = sub {
-    die "Only one role supported at a time by with" if @_ > 1;
-    $me->apply_role_to_package($target, $_[0]);
+    $me->apply_union_of_roles_to_package($target, @_);
   };
   # grab all *non-constant* (stash slot is not a scalarref) subs present
   # in the symbol table and store their refaddrs (no need to forcibly
@@ -144,6 +143,29 @@ sub create_class_with_roles {
   return $new_name;
 }
 
+sub apply_union_of_roles_to_package {
+  my ($me, $to, @roles) = @_;
+
+  return $me->apply_role_to_package($to, $roles[0]) if @roles == 1;
+
+  _load_module($_) for @roles;
+  my %methods;
+  foreach my $role (@roles) {
+    my $this_methods = $me->_concrete_methods_of($role);
+    $methods{$_}{$this_methods->{$_}} = $role for keys %$this_methods;
+  }
+  delete $methods{$_} for grep keys(%{$methods{$_}}) == 1, keys %methods;
+  delete $methods{$_} for $me->_concrete_methods_of($to);
+  if (keys %methods) {
+    my $fail = 
+      join "\n",
+        map "$_ is provided by: ".join(', ', values %{$methods{$_}}),
+          keys %methods;
+    die "Conflict combining ".join(', ', @roles);
+  }
+  $me->apply_role_to_package($to, $_) for @roles;
+}
+
 sub _composable_package_for {
   my ($me, $role) = @_;
   my $composed_name = 'Role::Tiny::_COMPOSABLE::'.$role;
@@ -185,18 +207,16 @@ sub _check_requires {
 sub _concrete_methods_of {
   my ($me, $role) = @_;
   my $info = $INFO{$role};
-  $info->{methods} ||= do {
-    # grab role symbol table
-    my $stash = do { no strict 'refs'; \%{"${role}::"}};
-    my $not_methods = $info->{not_methods};
-    +{
-      # grab all code entries that aren't in the not_methods list
-      map {
-        my $code = *{$stash->{$_}}{CODE};
-        # rely on the '' key we added in import for "no code here"
-        exists $not_methods->{$code||''} ? () : ($_ => $code)
-      } grep !ref($stash->{$_}), keys %$stash
-    };
+  # grab role symbol table
+  my $stash = do { no strict 'refs'; \%{"${role}::"}};
+  my $not_methods = $info->{not_methods};
+  +{
+    # grab all code entries that aren't in the not_methods list
+    map {
+      my $code = *{$stash->{$_}}{CODE};
+      # rely on the '' key we added in import for "no code here"
+      exists $not_methods->{$code||''} ? () : ($_ => $code)
+    } grep !ref($stash->{$_}), keys %$stash
   };
 }
 

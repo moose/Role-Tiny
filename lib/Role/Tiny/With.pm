@@ -9,7 +9,7 @@ our @EXPORT = qw( with );
 
 sub with {
     my $target = caller;
-    Role::Tiny->apply_role_to_package($target, @_)
+    Role::Tiny->apply_union_of_roles_to_package($target, @_)
 }
 
 1;
