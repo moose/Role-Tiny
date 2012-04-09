@@ -12,6 +12,7 @@ $VERSION = eval $VERSION;
 our %INFO;
 our %APPLIED_TO;
 our %COMPOSED;
+our %UNION_INFO;
 
 # Module state workaround totally stolen from Zefram's Module::Runtime.
 
@@ -148,22 +149,34 @@ sub apply_union_of_roles_to_package {
 
   return $me->apply_role_to_package($to, $roles[0]) if @roles == 1;
 
-  _load_module($_) for @roles;
-  my %methods;
-  foreach my $role (@roles) {
-    my $this_methods = $me->_concrete_methods_of($role);
-    $methods{$_}{$this_methods->{$_}} = $role for keys %$this_methods;
-  }
-  delete $methods{$_} for grep keys(%{$methods{$_}}) == 1, keys %methods;
-  delete $methods{$_} for $me->_concrete_methods_of($to);
-  if (keys %methods) {
+  my %conflicts = %{$me->_union_info_for(@roles)->{conflicts}};
+  delete $conflicts{$_} for $me->_concrete_methods_of($to);
+  if (keys %conflicts) {
     my $fail = 
       join "\n",
-        map "$_ is provided by: ".join(', ', values %{$methods{$_}}),
-          keys %methods;
-    die "Conflict combining ".join(', ', @roles);
+        map {
+          "Due to a method name conflict between roles "
+          ."'".join(' and ', sort values %{$conflicts{$_}})."'"
+          .", the method '$_' must be implemented by '${to}'"
+        } keys %conflicts;
+    die $fail;
   }
   $me->apply_role_to_package($to, $_) for @roles;
+  $APPLIED_TO{$to}{join('|',@roles)} = 1;
+}
+
+sub _union_info_for {
+  my ($me, @roles) = @_;
+  $UNION_INFO{join('|',@roles)} ||= do {
+    _load_module($_) for @roles;
+    my %methods;
+    foreach my $role (@roles) {
+      my $this_methods = $me->_concrete_methods_of($role);
+      $methods{$_}{$this_methods->{$_}} = $role for keys %$this_methods;
+    }
+    delete $methods{$_} for grep keys(%{$methods{$_}}) == 1, keys %methods;
+    +{ conflicts => \%methods }
+  };
 }
 
 sub _composable_package_for {
