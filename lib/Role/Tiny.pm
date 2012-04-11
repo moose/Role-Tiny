@@ -12,7 +12,7 @@ $VERSION = eval $VERSION;
 our %INFO;
 our %APPLIED_TO;
 our %COMPOSED;
-our %UNION_INFO;
+our %COMPOSITE_INFO;
 
 # Module state workaround totally stolen from Zefram's Module::Runtime.
 
@@ -57,7 +57,7 @@ sub import {
     push @{$INFO{$target}{requires}||=[]}, @_;
   };
   *{_getglob "${target}::with"} = sub {
-    $me->apply_union_of_roles_to_package($target, @_);
+    $me->apply_roles_to_package($target, @_);
   };
   # grab all *non-constant* (stash slot is not a scalarref) subs present
   # in the symbol table and store their refaddrs (no need to forcibly
@@ -70,7 +70,7 @@ sub import {
   $APPLIED_TO{$target} = { $target => undef };
 }
 
-sub apply_role_to_package {
+sub apply_single_role_to_package {
   my ($me, $to, $role) = @_;
 
   _load_module($role);
@@ -152,12 +152,14 @@ sub create_class_with_roles {
   return $new_name;
 }
 
-sub apply_union_of_roles_to_package {
+sub apply_role_to_package { shift->apply_single_role_to_package(@_) }
+
+sub apply_roles_to_package {
   my ($me, $to, @roles) = @_;
 
-  return $me->apply_role_to_package($to, $roles[0]) if @roles == 1;
+  return $me->apply_single_role_to_package($to, $roles[0]) if @roles == 1;
 
-  my %conflicts = %{$me->_union_info_for(@roles)->{conflicts}};
+  my %conflicts = %{$me->_composite_info_for(@roles)->{conflicts}};
   delete $conflicts{$_} for $me->_concrete_methods_of($to);
   if (keys %conflicts) {
     my $fail = 
@@ -169,13 +171,13 @@ sub apply_union_of_roles_to_package {
         } keys %conflicts;
     die $fail;
   }
-  $me->apply_role_to_package($to, $_) for @roles;
+  $me->apply_single_role_to_package($to, $_) for @roles;
   $APPLIED_TO{$to}{join('|',@roles)} = 1;
 }
 
-sub _union_info_for {
+sub _composite_info_for {
   my ($me, @roles) = @_;
-  $UNION_INFO{join('|', sort @roles)} ||= do {
+  $COMPOSITE_INFO{join('|', sort @roles)} ||= do {
     _load_module($_) for @roles;
     my %methods;
     foreach my $role (@roles) {
@@ -353,15 +355,18 @@ role application will fail loudly.
 =back
 
 Unlike L<Class::C3>, where the B<last> class inherited from "wins," role
-composition is the other way around, where first wins.  In a more complete
-system (see L<Moose>) roles are checked to see if they clash.  The goal of this
-is to be much simpler, hence disallowing composition of multiple roles at once.
+composition is the other way around, where the class wins. If multiple roles
+are applied in a single call (single with statement), then if any of their
+provided methods clash, an exception is raised unless the class provides
+a method since this conflict indicates a potential problem.
 
 =head1 METHODS
 
-=head2 apply_role_to_package
+=head2 apply_roles_to_package
 
- Role::Tiny->apply_role_to_package('Some::Package', 'Some::Role');
+ Role::Tiny->apply_roles_to_package(
+   'Some::Package', 'Some::Role', 'Some::Other::Role'
+ );
 
 Composes role with package.  See also L<Role::Tiny::With>.
 
@@ -409,10 +414,19 @@ Declares a list of methods that must be defined to compose role.
 =head2 with
 
  with 'Some::Role1';
+
+ with 'Some::Role1', 'Some::Role2';
+
+Composes another role into the current role (or class via L<Role::Tiny::With>).
+
+If you have conflicts and want to resolve them in favour of Some::Role1 you
+can instead write: 
+
+ with 'Some::Role1';
  with 'Some::Role2';
 
-Composes another role into the current role.  Only one role may be composed in
-at a time to allow the code to remain as simple as possible.
+If you have conflicts and want to resolve different conflicts in favour of
+different roles, please refactor your codebase.
 
 =head2 before
 
@@ -457,8 +471,10 @@ a meta-protocol-less subset of the king of role systems, L<Moose::Role>.
 
 If you don't want method modifiers and do want to be forcibly restricted
 to a single role application per class, Ovid's L<Role::Basic> exists. But
-Stevan Little (the L<Moose> author) and I are both still convinced that
-he's Doing It Wrong.
+Stevan Little (the L<Moose> author) don't find the additional restrictions
+to be amazingly helpful in most cases; L<Role::Basic>'s choices are more
+a guide to what you should prefer doing, to our mind, rather than something
+that needs to be enforced.
 
 =head1 AUTHOR
 

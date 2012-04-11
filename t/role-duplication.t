@@ -9,6 +9,6 @@ use Test::More;
 
 eval { Role::Tiny->create_class_with_roles('Base', qw(Role Role)); };
 
-like $@, 'Duplication', 'duplicate role detected';
+like $@, qr/Duplicated/, 'duplicate role detected';
 
 done_testing;

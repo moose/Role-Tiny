@@ -1,6 +1,6 @@
 package My::Does::Basic;
 
-use Role::Tiny::Restricted;
+use Role::Tiny;
 
 requires 'turbo_charger';
 

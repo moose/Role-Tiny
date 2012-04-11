@@ -1,6 +1,6 @@
 package My::Example;
 
-use Role::Tiny::Restricted 'with';
+use Role::Tiny 'with';
 
 with 'My::Does::Basic';
 
