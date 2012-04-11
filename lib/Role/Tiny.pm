@@ -106,6 +106,14 @@ sub create_class_with_roles {
 
   die "No roles supplied!" unless @roles;
 
+  {
+    my %seen;
+    $seen{$_}++ for @roles;
+    if (my @dupes = grep $seen{$_} > 1, @roles) {
+      die "Duplicated roles: ".join(', ', @dupes);
+    }
+  }
+
   my $new_name = join(
     '__WITH__', $superclass, my $compose_name = join '__AND__', @roles
   );
@@ -167,7 +175,7 @@ sub apply_union_of_roles_to_package {
 
 sub _union_info_for {
   my ($me, @roles) = @_;
-  $UNION_INFO{join('|',@roles)} ||= do {
+  $UNION_INFO{join('|', sort @roles)} ||= do {
     _load_module($_) for @roles;
     my %methods;
     foreach my $role (@roles) {

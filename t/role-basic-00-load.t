@@ -1,7 +1,7 @@
 use Test::More tests => 1;
 
 BEGIN {
-    use_ok( 'Role::Tiny::Restricted' ) || BAIL_OUT "Could not load Role::Tiny::Restricted: $!";
+    use_ok( 'Role::Tiny' ) || BAIL_OUT "Could not load Role::Tiny: $!";
 }
 
-diag( "Testing Role::Tiny::Restricted $Role::Tiny::Restricted::VERSION, Perl $], $^X" );
+diag( "Testing Role::Tiny $Role::Tiny::VERSION, Perl $], $^X" );

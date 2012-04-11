@@ -2,12 +2,12 @@
 
 use lib 'lib', 't/role-basic/lib';
 use MyTests;
-require Role::Tiny::Restricted;
+require Role::Tiny;
 
 {
     package My::Does::Basic;
 
-    use Role::Tiny::Restricted;
+    use Role::Tiny;
 
     requires 'turbo_charger';
 
@@ -17,19 +17,8 @@ require Role::Tiny::Restricted;
 }
 
 eval <<'END_PACKAGE';
-package My::Bad::MultipleWith;
-use Role::Tiny::Restricted::With;
-with 'My::Does::Basic';
-with 'My::Does::Basic';  # can't use with() more than once
-sub turbo_charger {}
-END_PACKAGE
-like $@,
-  qr/with\(\) may not be called more than once for My::Bad::MultipleWith/,
-  'Trying to use with() more than once in a package should fail';
-
-eval <<'END_PACKAGE';
 package My::Bad::Requirement;
-use Role::Tiny::Restricted::With;
+use Role::Tiny::With;
 with 'My::Does::Basic'; # requires turbo_charger
 END_PACKAGE
 like $@,
@@ -39,12 +28,12 @@ qr/missing turbo_charger/,
 {
     {
         package My::Conflict;
-        use Role::Tiny::Restricted;
+        use Role::Tiny;
         sub conflict {};
     }
     eval <<'    END_PACKAGE';
     package My::Bad::MethodConflicts;
-    use Role::Tiny::Restricted::With;
+    use Role::Tiny::With;
     with qw(My::Does::Basic My::Conflict);
     sub turbo_charger {}
     END_PACKAGE
@@ -57,19 +46,19 @@ qr/missing turbo_charger/,
 {
     {
         package Role1;
-        use Role::Tiny::Restricted;
+        use Role::Tiny;
         requires 'missing_method';
         sub method1 { 'method1' }
     }
     {
         package Role2;
-        use Role::Tiny::Restricted;
+        use Role::Tiny;
         with 'Role1';
         sub method2 { 'method2' }
     }
     eval <<"    END";
     package My::Class::Missing1;
-    use Role::Tiny::Restricted::With;
+    use Role::Tiny::With;
     with 'Role2';
     END
     like $@,
@@ -79,12 +68,12 @@ qr/missing turbo_charger/,
 {
     {
         package Role3;
-        use Role::Tiny::Restricted;
+        use Role::Tiny;
         requires qw(this that);
     }
     eval <<"    END";
     package My::Class::Missing2;
-    use Role::Tiny::Restricted::With;
+    use Role::Tiny::With;
     with 'Role3';
     END
     like $@,

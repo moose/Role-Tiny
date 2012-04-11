@@ -2,12 +2,12 @@
 
 use lib 'lib', 't/role-basic/lib';
 use MyTests;
-require Role::Tiny::Restricted;
+require Role::Tiny;
 
 {
 
     package My::Does::Basic1;
-    use Role::Tiny::Restricted;
+    use Role::Tiny;
     requires 'turbo_charger';
 
     sub method {
@@ -17,7 +17,7 @@ require Role::Tiny::Restricted;
 {
 
     package My::Does::Basic2;
-    use Role::Tiny::Restricted;
+    use Role::Tiny;
     requires 'turbo_charger';
 
     sub method2 {
@@ -27,7 +27,7 @@ require Role::Tiny::Restricted;
 
 eval <<'END_PACKAGE';
 package My::Class1;
-use Role::Tiny::Restricted 'with';
+use Role::Tiny 'with';
 with qw(
     My::Does::Basic1
     My::Does::Basic2
@@ -40,7 +40,7 @@ ok !$@, 'We should be able to use two roles with the same requirements'
 {
 
     package My::Does::Basic3;
-    use Role::Tiny::Restricted;
+    use Role::Tiny;
     with 'My::Does::Basic2';
 
     sub method3 {
@@ -50,7 +50,7 @@ ok !$@, 'We should be able to use two roles with the same requirements'
 
 eval <<'END_PACKAGE';
 package My::Class2;
-use Role::Tiny::Restricted 'with';
+use Role::Tiny 'with';
 with qw(
     My::Does::Basic3
 );
@@ -82,12 +82,12 @@ ok !$object->Role::Tiny::does_role('My::Does::Basic1'),
 {
     {
         package Role::Which::Imports;
-        use Role::Tiny::Restricted allow => 'TestMethods';
+        use Role::Tiny allow => 'TestMethods';
         use TestMethods qw(this that);
     }
     {
        package Class::With::ImportingRole;
-       use Role::Tiny::Restricted 'with';
+       use Role::Tiny 'with';
        with 'Role::Which::Imports';
        sub new { bless {} => shift }
     }
@@ -103,12 +103,12 @@ ok !$object->Role::Tiny::does_role('My::Does::Basic1'),
 {
     {
         package Role::WithImportsOnceRemoved;
-        use Role::Tiny::Restricted;
+        use Role::Tiny;
         with 'Role::Which::Imports';
     }
     {
         package Class::With::ImportingRole2;
-        use Role::Tiny::Restricted 'with';
+        use Role::Tiny 'with';
 $ENV{DEBUG} = 1;
         with 'Role::WithImportsOnceRemoved';
         sub new { bless {} => shift }

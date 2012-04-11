@@ -6,23 +6,23 @@ use MyTests;
 # multiple roles with the same role
 {
     package RoleC;
-    use Role::Tiny::Restricted;
+    use Role::Tiny;
     sub baz { 'baz' }
 
     package RoleB;
-    use Role::Tiny::Restricted;
+    use Role::Tiny;
     with 'RoleC';
     sub bar { 'bar' }
 
     package RoleA;
-    use Role::Tiny::Restricted;
+    use Role::Tiny;
     with 'RoleC';
     sub foo { 'foo' }
 
     package Foo;
     use strict;
     use warnings;
-    use Role::Tiny::Restricted 'with';
+    use Role::Tiny 'with';
     ::is( ::exception {
         with 'RoleA', 'RoleB';
     }, undef, 'Composing multiple roles which use the same role should not have conflicts' );
@@ -41,7 +41,7 @@ use MyTests;
     local *UNIVERSAL::can = sub { 1 };
     eval <<'    END';
     package Can::Can;
-    use Role::Tiny::Restricted 'with';
+    use Role::Tiny 'with';
     with 'A::NonExistent::Role';
     END
     my $error = $@ || '';
