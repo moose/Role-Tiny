@@ -152,12 +152,15 @@ sub create_class_with_roles {
   return $new_name;
 }
 
+# preserved for compat, and apply_roles_to_package calls it to allow an
+# updated Role::Tiny to use a non-updated Moo::Role
+
 sub apply_role_to_package { shift->apply_single_role_to_package(@_) }
 
 sub apply_roles_to_package {
   my ($me, $to, @roles) = @_;
 
-  return $me->apply_single_role_to_package($to, $roles[0]) if @roles == 1;
+  return $me->apply_role_to_package($to, $roles[0]) if @roles == 1;
 
   my %conflicts = %{$me->_composite_info_for(@roles)->{conflicts}};
   delete $conflicts{$_} for $me->_concrete_methods_of($to);
@@ -172,7 +175,7 @@ sub apply_roles_to_package {
     die $fail;
   }
   delete $INFO{$to}{methods}; # reset since we're about to add methods
-  $me->apply_single_role_to_package($to, $_) for @roles;
+  $me->apply_role_to_package($to, $_) for @roles;
   $APPLIED_TO{$to}{join('|',@roles)} = 1;
 }
 
