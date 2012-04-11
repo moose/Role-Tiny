@@ -171,6 +171,7 @@ sub apply_roles_to_package {
         } keys %conflicts;
     die $fail;
   }
+  delete $INFO{$to}{methods}; # reset since we're about to add methods
   $me->apply_single_role_to_package($to, $_) for @roles;
   $APPLIED_TO{$to}{join('|',@roles)} = 1;
 }
@@ -233,7 +234,7 @@ sub _concrete_methods_of {
   # grab role symbol table
   my $stash = do { no strict 'refs'; \%{"${role}::"}};
   my $not_methods = $info->{not_methods};
-  +{
+  $info->{methods} ||= +{
     # grab all code entries that aren't in the not_methods list
     map {
       my $code = *{$stash->{$_}}{CODE};
