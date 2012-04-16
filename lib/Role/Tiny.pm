@@ -364,49 +364,6 @@ are applied in a single call (single with statement), then if any of their
 provided methods clash, an exception is raised unless the class provides
 a method since this conflict indicates a potential problem.
 
-=head1 METHODS
-
-=head2 apply_roles_to_package
-
- Role::Tiny->apply_roles_to_package(
-   'Some::Package', 'Some::Role', 'Some::Other::Role'
- );
-
-Composes role with package.  See also L<Role::Tiny::With>.
-
-=head2 apply_roles_to_object
-
- Role::Tiny->apply_roles_to_object($foo, qw(Some::Role1 Some::Role2));
-
-Composes roles in order into object directly.  Object is reblessed into the
-resulting class.
-
-=head2 create_class_with_roles
-
- Role::Tiny->create_class_with_roles('Some::Base', qw(Some::Role1 Some::Role2));
-
-Creates a new class based on base, with the roles composed into it in order.
-New class is returned.
-
-=head1 SUBROUTINES
-
-=head2 does_role
-
- if (Role::Tiny::does_role($foo, 'Some::Role')) {
-   ...
- }
-
-Returns true if class has been composed with role.
-
-This subroutine is also installed as ->does on any class a Role::Tiny is
-composed into unless that class already has an ->does method, so
-
-  if ($foo->does('Some::Role')) {
-    ...
-  }
-
-will work for classes but to test a role, one must use ::does_role directly
-
 =head1 IMPORTED SUBROUTINES
 
 =head2 requires
@@ -468,6 +425,49 @@ L<Class::Method::Modifiers> is lazily loaded and we do not declare it as
 a dependency. If your L<Role::Tiny> role uses modifiers you must depend on
 both L<Class::Method::Modifiers> and L<Role::Tiny>.
 
+=head1 SUBROUTINES
+
+=head2 does_role
+
+ if (Role::Tiny::does_role($foo, 'Some::Role')) {
+   ...
+ }
+
+Returns true if class has been composed with role.
+
+This subroutine is also installed as ->does on any class a Role::Tiny is
+composed into unless that class already has an ->does method, so
+
+  if ($foo->does('Some::Role')) {
+    ...
+  }
+
+will work for classes but to test a role, one must use ::does_role directly
+
+=head1 METHODS
+
+=head2 apply_roles_to_package
+
+ Role::Tiny->apply_roles_to_package(
+   'Some::Package', 'Some::Role', 'Some::Other::Role'
+ );
+
+Composes role with package.  See also L<Role::Tiny::With>.
+
+=head2 apply_roles_to_object
+
+ Role::Tiny->apply_roles_to_object($foo, qw(Some::Role1 Some::Role2));
+
+Composes roles in order into object directly.  Object is reblessed into the
+resulting class.
+
+=head2 create_class_with_roles
+
+ Role::Tiny->create_class_with_roles('Some::Base', qw(Some::Role1 Some::Role2));
+
+Creates a new class based on base, with the roles composed into it in order.
+New class is returned.
+
 =head1 SEE ALSO
 
 L<Role::Tiny> is the attribute-less subset of L<Moo::Role>; L<Moo::Role> is
@@ -503,6 +503,8 @@ ajgb - Alex J. G. Burzyński (cpan:AJGB) <ajgb@cpan.org>
 doy - Jesse Luehrs (cpan:DOY) <doy at tozt dot net>
 
 perigrin - Chris Prather (cpan:PERIGRIN) <chris@prather.org>
+
+Mithaldu - Christian Walde (cpan:MITHALDU) <walde.christian@googlemail.com>
 
 =head1 COPYRIGHT
 
