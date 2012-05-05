@@ -4,7 +4,7 @@ use Test::More;
 
 {
   package Role; use Role::Tiny;
-  around foo => sub { my $orig = shift; 1 + $orig->(@_) };
+  sub foo { my $orig = shift; 1 + $orig->(@_) };
   package Base; sub foo { 1 }
 }
 

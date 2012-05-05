@@ -1,3 +1,5 @@
+  - alter duplication test to not provoke Class::Method::Modifiers loading
+
 1.001001 - 2012-04-27
   - remove strictures from one last test file
 
