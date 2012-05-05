@@ -1,3 +1,4 @@
+1.001002 - 2012-05-05
   - alter duplication test to not provoke Class::Method::Modifiers loading
 
 1.001001 - 2012-04-27
