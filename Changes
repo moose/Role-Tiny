@@ -1,3 +1,5 @@
+  - store coderefs as well as their refaddrs to protect against crazy
+
 1.001002 - 2012-05-05
   - alter duplication test to not provoke Class::Method::Modifiers loading
 
