@@ -1,3 +1,5 @@
+  - add an explicit return to all exported subs so people don't accidentally
+    rely on the return value
   - store coderefs as well as their refaddrs to protect against crazy
 
 1.001002 - 2012-05-05

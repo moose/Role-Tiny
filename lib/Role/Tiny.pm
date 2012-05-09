@@ -51,13 +51,16 @@ sub import {
     *{_getglob "${target}::${type}"} = sub {
       require Class::Method::Modifiers;
       push @{$INFO{$target}{modifiers}||=[]}, [ $type => @_ ];
+      return;
     };
   }
   *{_getglob "${target}::requires"} = sub {
     push @{$INFO{$target}{requires}||=[]}, @_;
+    return;
   };
   *{_getglob "${target}::with"} = sub {
     $me->apply_roles_to_package($target, @_);
+    return;
   };
   # grab all *non-constant* (stash slot is not a scalarref) subs present
   # in the symbol table and store their refaddrs (no need to forcibly
