@@ -133,6 +133,18 @@ sub create_class_with_roles {
     require MRO::Compat;
   }
 
+  my %conflicts = %{$me->_composite_info_for(@roles)->{conflicts}};
+  if (keys %conflicts) {
+    my $fail = 
+      join "\n",
+        map {
+          "Method name conflict for '$_' between roles "
+          ."'".join(' and ', sort values %{$conflicts{$_}})."'"
+          .", cannot apply these simultaneously to an object."
+        } keys %conflicts;
+    die $fail;
+  }
+
   my @composable = map $me->_composable_package_for($_), reverse @roles;
 
   *{_getglob("${new_name}::ISA")} = [ @composable, $superclass ];
