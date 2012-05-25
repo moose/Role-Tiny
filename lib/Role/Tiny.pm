@@ -252,7 +252,7 @@ sub _concrete_methods_of {
   my $stash = do { no strict 'refs'; \%{"${role}::"}};
   # reverse so our keys become the values (captured coderefs) in case
   # they got copied or re-used since
-  my $not_methods = { reverse %{$info->{not_methods}} };
+  my $not_methods = { reverse %{$info->{not_methods}||{}} };
   $info->{methods} ||= +{
     # grab all code entries that aren't in the not_methods list
     map {
