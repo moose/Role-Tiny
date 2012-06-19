@@ -17,7 +17,23 @@ BEGIN {
 }
 
 BEGIN {
+  package ExtraRole;
+
+  use Role::Tiny;
+}
+
+BEGIN {
   package MyClass;
+
+  sub foo { 'class foo' }
+}
+
+BEGIN {
+  package ExtraClass;
+
+  use Role::Tiny::With;
+
+  with qw(MyRole ExtraRole);
 
   sub foo { 'class foo' }
 }
@@ -36,6 +52,7 @@ sub try_apply_to {
 
 is(try_apply_to('MyClass'), undef, 'role applies cleanly');
 is(MyClass->foo, 'role foo class foo', 'method modifier');
+is(ExtraClass->foo, 'role foo class foo', 'method modifier with composition');
 
 ok(exception {
     my $new_class = Role::Tiny->create_class_with_roles('MyClass', 'BrokenRole');

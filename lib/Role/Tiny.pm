@@ -188,7 +188,14 @@ sub apply_roles_to_package {
         } keys %conflicts;
     die $fail;
   }
-  delete $INFO{$to}{methods}; # reset since we're about to add methods
+
+  # the if guard here is essential since otherwise we accidentally create
+  # a $INFO for something that isn't a Role::Tiny (or Moo::Role) because
+  # autovivification hates us and wants us to die()
+  if ($INFO{$to}) {
+    delete $INFO{$to}{methods}; # reset since we're about to add methods
+  }
+
   $me->apply_role_to_package($to, $_) for @roles;
   $APPLIED_TO{$to}{join('|',@roles)} = 1;
 }

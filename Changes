@@ -1,3 +1,4 @@
+  - correctly apply modifiers with role composition
   - check for conflicts during role-to-object application (test from mmcleric)
   - add an explicit return to all exported subs so people don't accidentally
     rely on the return value
