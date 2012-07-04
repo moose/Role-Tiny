@@ -50,4 +50,28 @@ use MyTests;
             or diag "Error found: $error";
 }
 
+{
+    package Role1;
+    use Role::Tiny;
+
+    package Role2;
+    use Role::Tiny;
+
+    package Frew;
+    use strict;
+    use warnings;
+    sub new { bless {} => shift }
+
+    my $object = Frew->new;
+
+    ::ok(!Role::Tiny::does_role($object, 'Role1'), 'no Role1 yet');
+    ::ok(!Role::Tiny::does_role($object, 'Role2'), 'no Role2 yet');
+
+    Role::Tiny->apply_roles_to_object($object, 'Role1');
+    ::ok(Role::Tiny::does_role($object, "Role1"), 'Role1 consumed');
+    ::ok(!Role::Tiny::does_role($object, 'Role2'), 'no Role2 yet');
+    Role::Tiny->apply_roles_to_object($object, 'Role2');
+    ::ok(Role::Tiny::does_role($object, "Role1"), 'Role1 consumed');
+    ::ok(Role::Tiny::does_role($object, 'Role2'), 'Role2 consumed');
+}
 done_testing;
