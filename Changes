@@ -1,3 +1,6 @@
+  - when applying runtime roles include roles from original class in new class
+    ( fixes ::does_role checks)
+
 1.001003 - 2012-06-19
   - correctly apply modifiers with role composition
   - check for conflicts during role-to-object application (test from mmcleric)

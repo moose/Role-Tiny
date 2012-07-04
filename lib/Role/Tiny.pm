@@ -159,7 +159,7 @@ sub create_class_with_roles {
   *{_getglob "${new_name}::does"} = \&does_role unless $new_name->can('does');
 
   @{$APPLIED_TO{$new_name}||={}}{
-    map keys %{$APPLIED_TO{$_}}, @roles
+    map keys %{$APPLIED_TO{$_}}, @roles, $superclass
   } = ();
 
   $COMPOSED{class}{$new_name} = 1;
