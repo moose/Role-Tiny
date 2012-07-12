@@ -20,4 +20,12 @@ WriteMakefile(
     ($mymeta_works ? () : (%BUILD_DEPS)),
   },
   $mymeta_works ? (BUILD_REQUIRES => \%BUILD_DEPS) : (),
+
+  META_ADD => {
+    resources => {
+      # r/w: gitmo@git.shadowcat.co.uk:Role-Tiny.git
+      repository => 'git://git.shadowcat.co.uk/Role-Tiny.git',
+    },
+  },
+
 );
