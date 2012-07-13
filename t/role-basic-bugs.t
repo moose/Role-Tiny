@@ -44,6 +44,9 @@ use MyTests;
     use Role::Tiny 'with';
     with 'A::NonExistent::Role';
     END
+}
+
+{
     my $error = $@ || '';
     like $error, qr{^Can't locate A/NonExistent/Role.pm},
         'If ->can always returns true, we should still not think we loaded the role'
