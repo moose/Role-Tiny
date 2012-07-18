@@ -159,7 +159,7 @@ sub create_class_with_roles {
   *{_getglob "${new_name}::does"} = \&does_role unless $new_name->can('does');
 
   @{$APPLIED_TO{$new_name}||={}}{
-    map keys %{$APPLIED_TO{$_}}, @roles, $superclass
+    map keys %{$APPLIED_TO{$_}}, @roles
   } = ();
 
   $COMPOSED{class}{$new_name} = 1;
@@ -317,7 +317,15 @@ sub _install_single_modifier {
 
 sub does_role {
   my ($proto, $role) = @_;
-  return exists $APPLIED_TO{ref($proto)||$proto}{$role};
+  if ($] >= 5.010) {
+    require mro;
+  } else {
+    require MRO::Compat;
+  }
+  foreach my $class (@{mro::get_linear_isa(ref($proto)||$proto)}) {
+    return 1 if exists $APPLIED_TO{$class}{$role};
+  }
+  return 0;
 }
 
 1;
@@ -528,6 +536,8 @@ doy - Jesse Luehrs (cpan:DOY) <doy at tozt dot net>
 perigrin - Chris Prather (cpan:PERIGRIN) <chris@prather.org>
 
 Mithaldu - Christian Walde (cpan:MITHALDU) <walde.christian@googlemail.com>
+
+ilmari - Dagfinn Ilmari Mannsåker (cpan:ILMARI) <ilmari@ilmari.org>
 
 =head1 COPYRIGHT
 

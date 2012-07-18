@@ -1,4 +1,5 @@
   - localize UNIVERSAL::can change to avoid confusing TB2
+  - properly report roles consumed by superclasses
 
 1.001004 - 2012-07-12
   - remove strictures.pm from the test supplied by mmcleric so we install again
