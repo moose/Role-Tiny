@@ -13,7 +13,7 @@ my %BUILD_DEPS = (
 my $mymeta_works = do { no warnings; $ExtUtils::MakeMaker::VERSION >= 6.5707 };
 
 WriteMakefile(
-  NAME => 'Role-Tiny',
+  NAME => 'Role::Tiny',
   VERSION_FROM => 'lib/Role/Tiny.pm',
   PREREQ_PM => {
     ($] >= 5.010 ? () : ('MRO::Compat' => 0)),
