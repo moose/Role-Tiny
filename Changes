@@ -1,3 +1,4 @@
+  - load class in addition to roles when using create_class_from_roles
   - fix module name in Makefile.PL (RT#78591)
 
 1.001005 - 2012-07-18

@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-use lib 'lib', 't/role-basic/lib';
+use lib 'lib', 't/role-basic/lib', 't/lib';
 use MyTests;
 
 # multiple roles with the same role
@@ -77,4 +77,6 @@ use MyTests;
     ::ok(Role::Tiny::does_role($object, "Role1"), 'Role1 consumed');
     ::ok(Role::Tiny::does_role($object, 'Role2'), 'Role2 consumed');
 }
+
+can_ok(Role::Tiny->create_class_with_roles(qw(Bar Baz))->new, qw(bar baz));
 done_testing;

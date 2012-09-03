@@ -108,6 +108,7 @@ sub create_class_with_roles {
 
   die "No roles supplied!" unless @roles;
 
+  _load_module($superclass);
   {
     my %seen;
     $seen{$_}++ for @roles;
