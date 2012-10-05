@@ -24,7 +24,7 @@ WriteMakefile(
   META_ADD => {
     resources => {
       # r/w: gitmo@git.shadowcat.co.uk:Role-Tiny.git
-      repository => 'git://git.shadowcat.co.uk/Role-Tiny.git',
+      repository => 'git://git.shadowcat.co.uk/gitmo/Role-Tiny.git',
     },
   },
 
