@@ -86,11 +86,6 @@ sub apply_single_role_to_package {
 
   $me->_install_modifiers($to, $info->{modifiers});
 
-  # only add does() method to classes and only if they don't have one
-  if (not $INFO{$to} and not $to->can('does')) {
-    *{_getglob "${to}::does"} = \&does_role;
-  }
-
   # copy our role list into the target's
   @{$APPLIED_TO{$to}||={}}{keys %{$APPLIED_TO{$role}}} = ();
 }
@@ -156,8 +151,6 @@ sub create_class_with_roles {
     $new_name, $compose_name,
     do { my %h; @h{map @{$_->{requires}||[]}, @info} = (); keys %h }
   );
-
-  *{_getglob "${new_name}::does"} = \&does_role unless $new_name->can('does');
 
   @{$APPLIED_TO{$new_name}||={}}{
     map keys %{$APPLIED_TO{$_}}, @roles
@@ -298,6 +291,8 @@ sub _install_methods {
     no warnings 'once';
     *{_getglob "${to}::${i}"} = $methods->{$i};
   }
+  
+  $me->_install_does($to);
 }
 
 sub _install_modifiers {
@@ -314,6 +309,27 @@ sub _install_modifiers {
 sub _install_single_modifier {
   my ($me, @args) = @_;
   Class::Method::Modifiers::install_modifier(@args);
+}
+
+my $FALLBACK = sub { 0 };
+sub _install_does {
+  my ($me, $to) = @_;
+  
+  # only add does() method to classes
+  return if $INFO{$to};
+  
+  # add does() only if they don't have one
+  *{_getglob "${to}::does"} = \&does_role unless $to->can('does');
+  
+  return if ($to->can('DOES') and $to->can('DOES') != UNIVERSAL->can('DOES'));
+  
+  my $existing = $to->can('DOES') || $to->can('isa') || $FALLBACK;
+  my $new_sub = sub {
+    my ($proto, $role) = @_;
+    Role::Tiny::does_role($proto, $role) or $proto->$existing($role);
+  };
+  no warnings 'redefine';
+  *{_getglob "${to}::DOES"} = $new_sub;
 }
 
 sub does_role {
@@ -474,7 +490,11 @@ composed into unless that class already has an ->does method, so
     ...
   }
 
-will work for classes but to test a role, one must use ::does_role directly
+will work for classes but to test a role, one must use ::does_role directly.
+
+Additionally, Role::Tiny will override the standard Perl C<DOES> method
+for your class. However, if C<any> class in your class' inheritance
+heirarchy provides C<DOES>, then Role::Tiny will not override it.
 
 =head1 METHODS
 
@@ -539,6 +559,8 @@ perigrin - Chris Prather (cpan:PERIGRIN) <chris@prather.org>
 Mithaldu - Christian Walde (cpan:MITHALDU) <walde.christian@googlemail.com>
 
 ilmari - Dagfinn Ilmari Mannsåker (cpan:ILMARI) <ilmari@ilmari.org>
+
+tobyink - Toby Inkster (cpan:TOBYINK) <tobyink@cpan.org>
 
 =head1 COPYRIGHT
 

@@ -1,5 +1,7 @@
   - load class in addition to roles when using create_class_from_roles
   - fix module name in Makefile.PL (RT#78591)
+  - when classes consume roles, override their DOES method (RT#79747)
+  - method modifiers can be used for 'does' and 'DOES'
 
 1.001005 - 2012-07-18
   - localize UNIVERSAL::can change to avoid confusing TB2
