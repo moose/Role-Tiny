@@ -28,4 +28,9 @@ WriteMakefile(
     },
   },
 
+  META_MERGE => {
+    no_index => {
+      directory => [ 'xt' ]
+    }
+  },
 );
