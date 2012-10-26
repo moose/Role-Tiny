@@ -16,7 +16,6 @@ WriteMakefile(
   NAME => 'Role::Tiny',
   VERSION_FROM => 'lib/Role/Tiny.pm',
   PREREQ_PM => {
-    'Class::Method::Modifiers' => '1.10',
     ($] >= 5.010 ? () : ('MRO::Compat' => 0)),
     ($mymeta_works ? () : (%BUILD_DEPS)),
   },
