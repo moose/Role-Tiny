@@ -1,3 +1,4 @@
+1.002001 - 2012-10-26
   - t/does-Moo.t moved to 'xt' (RT#80290)
   - don't die when looking for 'DOES' on perl < 5.10 (RT#80402)
 
