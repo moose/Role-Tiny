@@ -1,4 +1,5 @@
   - t/does-Moo.t moved to 'xt' (RT#80290)
+  - don't die when looking for 'DOES' on perl < 5.10 (RT#80402)
 
 1.002000 - 2012-10-19
   - load class in addition to roles when using create_class_from_roles

@@ -321,7 +321,7 @@ sub _install_does {
   # add does() only if they don't have one
   *{_getglob "${to}::does"} = \&does_role unless $to->can('does');
   
-  return if ($to->can('DOES') and $to->can('DOES') != UNIVERSAL->can('DOES'));
+  return if ($to->can('DOES') and $to->can('DOES') != (UNIVERSAL->can('DOES') || 0));
   
   my $existing = $to->can('DOES') || $to->can('isa') || $FALLBACK;
   my $new_sub = sub {
