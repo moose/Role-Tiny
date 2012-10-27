@@ -1,5 +1,10 @@
 use Test::More;
 
+BEGIN {
+  plan skip_all => "Class::Method::Modifiers not installed"
+    unless eval "use Class::Method::Modifiers; 1";
+}
+
 my $pass;
 my $pass2;
 
