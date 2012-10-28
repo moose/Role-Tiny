@@ -45,7 +45,7 @@ sub import {
   warnings->import(FATAL => 'all');
   return if $INFO{$target}; # already exported into this package
   # get symbol table reference
-  my $stash = do { no strict 'refs'; \%{"${target}::"} };
+  my $stash = _getstash($target);
   # install before/after/around subs
   foreach my $type (qw(before after around)) {
     *{_getglob "${target}::${type}"} = sub {
@@ -250,7 +250,7 @@ sub _concrete_methods_of {
   my ($me, $role) = @_;
   my $info = $INFO{$role};
   # grab role symbol table
-  my $stash = do { no strict 'refs'; \%{"${role}::"}};
+  my $stash = _getstash($role);
   # reverse so our keys become the values (captured coderefs) in case
   # they got copied or re-used since
   my $not_methods = { reverse %{$info->{not_methods}||{}} };
@@ -278,7 +278,7 @@ sub _install_methods {
   my $methods = $me->_concrete_methods_of($role);
 
   # grab target symbol table
-  my $stash = do { no strict 'refs'; \%{"${to}::"}};
+  my $stash = _getstash($to);
 
   # determine already extant methods of target
   my %has_methods;
