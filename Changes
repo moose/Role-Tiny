@@ -1,3 +1,5 @@
+  - fix method modifier breakage on 5.10.0
+
 1.002002 - 2012-10-28
   - skip t/around-does.t when Class::Method::Modifiers is not installed
     (RT#80310)

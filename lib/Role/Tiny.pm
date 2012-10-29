@@ -214,7 +214,11 @@ sub _composable_package_for {
   return $composed_name if $COMPOSED{role}{$composed_name};
   $me->_install_methods($composed_name, $role);
   my $base_name = $composed_name.'::_BASE';
-  *{_getglob("${composed_name}::ISA")} = [ $base_name ];
+  # Not using _getglob, since setting @ISA via the typeglob breaks
+  # inheritance on 5.10.0 if the stash has previously been accessed an
+  # then a method called on the class (in that order!), which
+  # ->_install_methods (with the help of ->_install_does) ends up doing.
+  { no strict 'refs'; @{"${composed_name}::ISA"} = ( $base_name ); }
   my $modifiers = $INFO{$role}{modifiers}||[];
   my @mod_base;
   foreach my $modified (
