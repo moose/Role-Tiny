@@ -6,7 +6,7 @@ sub _getstash { \%{"$_[0]::"} }
 use strict;
 use warnings FATAL => 'all';
 
-our $VERSION = '1.002002'; # 1.2.2
+our $VERSION = '1.002003'; # 1.2.3
 $VERSION = eval $VERSION;
 
 our %INFO;
