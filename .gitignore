@@ -19,6 +19,9 @@ nytprof*
 /inc/
 !.gitignore
 .*.sw?
+*~
+.#*
+*#
 /Role-Tiny-*
 /README
 /Distar/
