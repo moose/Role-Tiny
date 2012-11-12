@@ -1,3 +1,5 @@
+  - don't use $_ as loop variable when calling arbitrary code
+
 1.002004 - 2012-11-02
   - remove accidentally-introduced strictures.pm usage
 

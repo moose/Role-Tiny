@@ -190,14 +190,18 @@ sub apply_roles_to_package {
     delete $INFO{$to}{methods}; # reset since we're about to add methods
   }
 
-  $me->apply_role_to_package($to, $_) for @roles;
+  foreach my $role (@roles) {
+    $me->apply_single_role_to_package($to, $role);
+  }
   $APPLIED_TO{$to}{join('|',@roles)} = 1;
 }
 
 sub _composite_info_for {
   my ($me, @roles) = @_;
   $COMPOSITE_INFO{join('|', sort @roles)} ||= do {
-    _load_module($_) for @roles;
+    foreach my $role (@roles) {
+      _load_module($role);
+    }
     my %methods;
     foreach my $role (@roles) {
       my $this_methods = $me->_concrete_methods_of($role);
