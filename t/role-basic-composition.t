@@ -123,4 +123,27 @@ $ENV{DEBUG} = 1;
     }
 }
 
+{
+	{
+		package Role1;
+		use Role::Tiny;
+		sub method1 { }
+		requires 'method2';
+	}
+
+	{
+		package Role2;
+		use Role::Tiny;
+		sub method2 { }
+		requires 'method1';
+	}
+	my $success = eval <<'END';
+		package Class;
+		use Role::Tiny::With;
+		with 'Role1', 'Role2';
+		1;
+END
+	is $success, 1, 'composed mutually dependent roles successfully' or diag "Error: $@";
+}
+
 done_testing;
