@@ -171,4 +171,34 @@ $ENV{DEBUG} = 1;
 	is $success, 1, 'composed mutually dependent modifiers successfully' or diag "Error: $@";
 }
 
+{
+	{
+		package Base::Role;
+		use Role::Tiny;
+		requires qw/method1 method2/;
+	}
+
+	{
+		package Sub::Role1;
+		use Role::Tiny;
+		with 'Base::Role';
+		sub method1 {}
+	}
+
+	{
+		package Sub::Role2;
+		use Role::Tiny;
+		with 'Base::Role';
+		sub method2 {}
+	}
+
+	my $success = eval q{
+		package Diamant::Class;
+		use Role::Tiny::With;
+		with qw/Sub::Role1 Sub::Role2/;
+		1;
+	};
+	is $success, 1, 'composed diamantly dependent roles successfully' or diag "Error: $@";
+}
+
 done_testing;
