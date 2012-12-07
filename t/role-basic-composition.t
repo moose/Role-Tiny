@@ -125,25 +125,50 @@ $ENV{DEBUG} = 1;
 
 {
 	{
-		package Role1;
+		package Method::Role1;
 		use Role::Tiny;
 		sub method1 { }
 		requires 'method2';
 	}
 
 	{
-		package Role2;
+		package Method::Role2;
 		use Role::Tiny;
 		sub method2 { }
 		requires 'method1';
 	}
-	my $success = eval <<'END';
+	my $success = eval q{
 		package Class;
 		use Role::Tiny::With;
-		with 'Role1', 'Role2';
+		with 'Method::Role1', 'Method::Role2';
 		1;
-END
-	is $success, 1, 'composed mutually dependent roles successfully' or diag "Error: $@";
+	};
+	is $success, 1, 'composed mutually dependent methods successfully' or diag "Error: $@";
+}
+
+{
+	{
+		package Modifier::Role1;
+		use Moo::Role;
+		sub foo {
+		}
+		before 'bar', sub {};
+	}
+
+	{
+		package Modifier::Role2;
+		use Moo::Role;
+		sub bar {
+		}
+		before 'foo', sub {};
+	}
+	my $success = eval q{
+		package Class;
+		use Moo;
+		with 'Modifier::Role1', 'Modifier::Role2';
+		1;
+	};
+	is $success, 1, 'composed mutually dependent modifiers successfully' or diag "Error: $@";
 }
 
 done_testing;
