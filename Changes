@@ -1,3 +1,4 @@
+  - complain loudly if Class::Method::Modifiers is too old (and skip tests)
   - don't use $_ as loop variable when calling arbitrary code
 
 1.002004 - 2012-11-02

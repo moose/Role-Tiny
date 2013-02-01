@@ -314,8 +314,17 @@ sub _install_modifiers {
   }
 }
 
+my $vcheck_error;
+
 sub _install_single_modifier {
   my ($me, @args) = @_;
+  defined($vcheck_error) or $vcheck_error = do {
+    local $@;
+    eval { Class::Method::Modifiers->VERSION(1.05); 1 }
+      ? 0
+      : $@
+  };
+  $vcheck_error and die $vcheck_error;
   Class::Method::Modifiers::install_modifier(@args);
 }
 

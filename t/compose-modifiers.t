@@ -3,8 +3,8 @@ use warnings FATAL => 'all';
 use Test::More;
 
 BEGIN {
-  plan skip_all => "Class::Method::Modifiers not installed"
-    unless eval "use Class::Method::Modifiers; 1";
+  plan skip_all => "Class::Method::Modifiers not installed or too old"
+    unless eval "use Class::Method::Modifiers 1.05; 1";
 }
 
 {
