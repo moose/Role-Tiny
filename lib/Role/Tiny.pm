@@ -73,20 +73,25 @@ sub import {
   $APPLIED_TO{$target} = { $target => undef };
 }
 
+sub role_application_steps {
+  qw(_install_methods _install_modifiers _check_requires _copy_applied_list);
+}
+
 sub apply_single_role_to_package {
   my ($me, $to, $role) = @_;
 
   _load_module($role);
 
   die "This is apply_role_to_package" if ref($to);
-  die "${role} is not a Role::Tiny" unless my $info = $INFO{$role};
+  die "${role} is not a Role::Tiny" unless $INFO{$role};
 
-  $me->_check_requires($to, $role, @{$info->{requires}||[]});
+  foreach my $step ($me->role_application_steps) {
+    $me->$step($to, $role);
+  }
+}
 
-  $me->_install_methods($to, $role);
-
-  $me->_install_modifiers($to, $info->{modifiers});
-
+sub _copy_applied_list {
+  my ($me, $to, $role) = @_;
   # copy our role list into the target's
   @{$APPLIED_TO{$to}||={}}{keys %{$APPLIED_TO{$role}}} = ();
 }
@@ -190,9 +195,10 @@ sub apply_roles_to_package {
   if ($INFO{$to}) {
     delete $INFO{$to}{methods}; # reset since we're about to add methods
   }
-
-  foreach my $role (@roles) {
-    $me->apply_single_role_to_package($to, $role);
+  foreach my $step ($me->role_application_steps) {
+    foreach my $role (@roles) {
+      $me->$step($to, $role);
+    }
   }
   $APPLIED_TO{$to}{join('|',@roles)} = 1;
 }
@@ -238,13 +244,14 @@ sub _composable_package_for {
     $e = "Evaling failed: $@\nTrying to eval:\n${code}" if $@;
   }
   die $e if $e;
-  $me->_install_modifiers($composed_name, $modifiers);
+  $me->_install_modifiers($composed_name, $role);
   $COMPOSED{role}{$composed_name} = 1;
   return $composed_name;
 }
 
 sub _check_requires {
-  my ($me, $to, $name, @requires) = @_;
+  my ($me, $to, $name) = @_;
+  return unless my @requires = @{$INFO{$name}{requires}||[]};
   if (my @requires_fail = grep !$to->can($_), @requires) {
     # role -> role, add to requires, role -> class, error out
     if (my $to_info = $INFO{$to}) {
@@ -304,7 +311,8 @@ sub _install_methods {
 }
 
 sub _install_modifiers {
-  my ($me, $to, $modifiers) = @_;
+  my ($me, $to, $name) = @_;
+  return unless my $modifiers = $INFO{$name}{modifiers};
   if (my $info = $INFO{$to}) {
     push @{$info->{modifiers}}, @{$modifiers||[]};
   } else {
