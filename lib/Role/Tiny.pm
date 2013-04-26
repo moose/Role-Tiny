@@ -364,6 +364,8 @@ sub does_role {
 
 1;
 
+=encoding utf-8
+
 =head1 NAME
 
 Role::Tiny - Roles. Like a nouvelle cuisine portion size slice of Moose.
