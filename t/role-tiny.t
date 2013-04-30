@@ -92,5 +92,9 @@ is exception {
 isa_ok($new_class, 'MyClass');
 is($new_class->extra1, 'role extra', 'method from role');
 
+ok(Role::Tiny->is_role('MyRole'), 'is_role true for roles');
+ok(!Role::Tiny->is_role('MyClass'), 'is_role false for classes');
+
+
 done_testing;
 

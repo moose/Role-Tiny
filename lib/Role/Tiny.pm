@@ -361,6 +361,11 @@ sub does_role {
   return 0;
 }
 
+sub is_role {
+  my ($me, $role) = @_;
+  return !!$INFO{$role};
+}
+
 1;
 
 =encoding utf-8
@@ -537,6 +542,12 @@ resulting class.
 
 Creates a new class based on base, with the roles composed into it in order.
 New class is returned.
+
+=head2 is_role
+
+ Role::Tiny->is_role('Some::Role1')
+
+Returns true if the given package is a role.
 
 =head1 SEE ALSO
 
