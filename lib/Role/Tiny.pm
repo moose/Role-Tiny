@@ -267,7 +267,7 @@ sub _concrete_methods_of {
     map {
       my $code = *{$stash->{$_}}{CODE};
       # rely on the '' key we added in import for "no code here"
-      exists $not_methods->{$code||''} ? () : ($_ => $code)
+      ( ! $code or exists $not_methods->{$code||''} ) ? () : ($_ => $code)
     } grep !ref($stash->{$_}), keys %$stash
   };
 }
