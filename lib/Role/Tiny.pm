@@ -64,9 +64,9 @@ sub import {
   };
   # grab all *non-constant* (stash slot is not a scalarref) subs present
   # in the symbol table and store their refaddrs (no need to forcibly
-  # inflate constant subs into real subs) - also add '' to here (this
-  # is used later) with a map to the coderefs in case of copying or re-use
-  my @not_methods = ('', map { *$_{CODE}||() } grep !ref($_), values %$stash);
+  # inflate constant subs into real subs) with a map to the coderefs in
+  # case of copying or re-use
+  my @not_methods = (map { *$_{CODE}||() } grep !ref($_), values %$stash);
   @{$INFO{$target}{not_methods}={}}{@not_methods} = @not_methods;
   # a role does itself
   $APPLIED_TO{$target} = { $target => undef };
@@ -266,8 +266,7 @@ sub _concrete_methods_of {
     # grab all code entries that aren't in the not_methods list
     map {
       my $code = *{$stash->{$_}}{CODE};
-      # rely on the '' key we added in import for "no code here"
-      ( ! $code or exists $not_methods->{$code||''} ) ? () : ($_ => $code)
+      ( ! $code or exists $not_methods->{$code} ) ? () : ($_ => $code)
     } grep !ref($stash->{$_}), keys %$stash
   };
 }
