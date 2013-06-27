@@ -512,7 +512,7 @@ will work for classes but to test a role, one must use ::does_role directly.
 
 Additionally, Role::Tiny will override the standard Perl C<DOES> method
 for your class. However, if C<any> class in your class' inheritance
-heirarchy provides C<DOES>, then Role::Tiny will not override it.
+hierarchy provides C<DOES>, then Role::Tiny will not override it.
 
 =head1 METHODS
 
