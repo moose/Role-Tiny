@@ -1,4 +1,6 @@
   - Fix _concrete_methods_of returning non-CODE entries
+  - fix broken implementation of method conflict resolution
+    (Perlmonks#1041015)
 
 1.002005 - 2013-02-01
   - complain loudly if Class::Method::Modifiers is too old (and skip tests)
