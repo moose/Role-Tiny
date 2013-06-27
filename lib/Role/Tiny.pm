@@ -171,7 +171,7 @@ sub apply_roles_to_package {
   return $me->apply_role_to_package($to, $roles[0]) if @roles == 1;
 
   my %conflicts = %{$me->_composite_info_for(@roles)->{conflicts}};
-  delete $conflicts{$_} for $me->_concrete_methods_of($to);
+  delete $conflicts{$_} for keys %{ $me->_concrete_methods_of($to) };
   if (keys %conflicts) {
     my $fail = 
       join "\n",
