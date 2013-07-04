@@ -2,6 +2,7 @@
   - fix broken implementation of method conflict resolution
     (Perlmonks#1041015)
   - add is_role method for checking if a given package is a role
+  - drop minimum perl version - code tests just fine on 5.6.1 and 5.6.2
 
 1.002005 - 2013-02-01
   - complain loudly if Class::Method::Modifiers is too old (and skip tests)

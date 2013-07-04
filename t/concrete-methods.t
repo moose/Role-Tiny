@@ -9,6 +9,7 @@ use Test::Fatal;
   sub before_role {}
 
   use Role::Tiny;
+  no warnings 'once';
 
   our $GLOBAL1 = 1;
   sub after_role {}
@@ -16,6 +17,7 @@ use Test::Fatal;
 
 {
   package MyClass1;
+  no warnings 'once';
 
   our $GLOBAL1 = 1;
   sub method {}
