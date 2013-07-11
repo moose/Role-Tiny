@@ -14,6 +14,21 @@ my $backcompat_called;
     $backcompat_called++;
   }
 }
+{
+  package RoleExtension2;
+  use base 'Role::Tiny';
+
+  sub role_application_steps {
+    $_[0]->SUPER::role_application_steps;
+  }
+
+  sub apply_single_role_to_package {
+    my $me = shift;
+    $me->SUPER::apply_single_role_to_package(@_);
+    $backcompat_called++;
+  }
+
+}
 
 {
   package Role1;
@@ -36,5 +51,13 @@ my $backcompat_called;
 
 is $backcompat_called, 2,
   'overridden apply_single_role_to_package called for backcompat';
+
+$backcompat_called = 0;
+{
+  package Class2;
+  RoleExtension2->apply_roles_to_package(__PACKAGE__, 'Role1', 'Role2');
+}
+is $backcompat_called, 0,
+  'overridden role_application_steps prevents backcompat attempt';
 
 done_testing;
