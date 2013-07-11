@@ -79,7 +79,6 @@ sub role_application_steps {
 
 sub apply_single_role_to_package {
   my ($me, $to, $role) = @_;
-  return if our $SKIP_APPLY;
 
   _load_module($role);
 
@@ -208,14 +207,15 @@ sub apply_roles_to_package {
         && $me->can('apply_single_role_to_package')
           != \&apply_single_role_to_package
   ) {
-    local our $SKIP_APPLY = 1;
     foreach my $role (@roles) {
       $me->apply_single_role_to_package($to, $role);
     }
   }
-  foreach my $step ($me->role_application_steps) {
-    foreach my $role (@roles) {
-      $me->$step($to, $role);
+  else {
+    foreach my $step ($me->role_application_steps) {
+      foreach my $role (@roles) {
+        $me->$step($to, $role);
+      }
     }
   }
   $APPLIED_TO{$to}{join('|',@roles)} = 1;
