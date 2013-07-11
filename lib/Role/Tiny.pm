@@ -196,19 +196,26 @@ sub apply_roles_to_package {
   if ($INFO{$to}) {
     delete $INFO{$to}{methods}; # reset since we're about to add methods
   }
-  foreach my $step ($me->role_application_steps) {
-    foreach my $role (@roles) {
-      $me->$step($to, $role);
-    }
-  }
-  if ($me ne __PACKAGE__
-      and $me->can('apply_single_role_to_package')
-        != \&apply_single_role_to_package) {
-    # backcompat: allow subclasses to use apply_single_role_to_package
-    # to apply changes.  set a local var so ours does nothing.
+
+  # backcompat: allow subclasses to use apply_single_role_to_package
+  # to apply changes.  set a local var so ours does nothing.
+  our %BACKCOMPAT_HACK;
+  if($me ne __PACKAGE__
+      and exists $BACKCOMPAT_HACK{$me} ? $BACKCOMPAT_HACK{$me} :
+      $BACKCOMPAT_HACK{$me} =
+        $me->can('role_application_steps')
+          == \&role_application_steps
+        && $me->can('apply_single_role_to_package')
+          != \&apply_single_role_to_package
+  ) {
     local our $SKIP_APPLY = 1;
     foreach my $role (@roles) {
       $me->apply_single_role_to_package($to, $role);
+    }
+  }
+  foreach my $step ($me->role_application_steps) {
+    foreach my $role (@roles) {
+      $me->$step($to, $role);
     }
   }
   $APPLIED_TO{$to}{join('|',@roles)} = 1;
