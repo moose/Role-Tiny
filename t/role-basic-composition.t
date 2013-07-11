@@ -146,10 +146,12 @@ $ENV{DEBUG} = 1;
 	is $success, 1, 'composed mutually dependent methods successfully' or diag "Error: $@";
 }
 
-{
+SKIP: {
+  skip "Class::Method::Modifiers not installed or too old", 1
+    unless eval "use Class::Method::Modifiers 1.05; 1";
 	{
 		package Modifier::Role1;
-		use Moo::Role;
+		use Role::Tiny;
 		sub foo {
 		}
 		before 'bar', sub {};
@@ -157,14 +159,14 @@ $ENV{DEBUG} = 1;
 
 	{
 		package Modifier::Role2;
-		use Moo::Role;
+		use Role::Tiny;
 		sub bar {
 		}
 		before 'foo', sub {};
 	}
 	my $success = eval q{
 		package Class;
-		use Moo;
+		use Role::Tiny::With;
 		with 'Modifier::Role1', 'Modifier::Role2';
 		1;
 	};
