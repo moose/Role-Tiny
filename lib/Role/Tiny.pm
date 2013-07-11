@@ -44,6 +44,7 @@ sub import {
   strict->import;
   warnings->import(FATAL => 'all');
   return if $INFO{$target}; # already exported into this package
+  $INFO{$target}{is_role} = 1;
   # get symbol table reference
   my $stash = _getstash($target);
   # install before/after/around subs
