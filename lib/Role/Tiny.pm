@@ -74,7 +74,7 @@ sub import {
 }
 
 sub role_application_steps {
-  qw(_install_methods _install_modifiers _check_requires _copy_applied_list);
+  qw(_install_methods _check_requires _install_modifiers _copy_applied_list);
 }
 
 sub apply_single_role_to_package {

@@ -34,4 +34,21 @@ foreach my $combo (
   is(ref($object), $combined, 'Object reblessed into correct class');
 }
 
+{
+  package Five; use Role::Tiny;
+  requires 'bar';
+  around bar => sub { my $orig = shift; $orig->(@_) };
+}
+{
+  is eval {
+    package WithFive;
+    use Role::Tiny::With;
+    use base 'Base';
+    with 'Five';
+  }, undef,
+    "composing an around modifier fails when method doesn't exist";
+  like $@, qr/Can't apply Five to WithFive - missing bar/,
+    ' ... with correct error message';
+}
+
 done_testing;
