@@ -50,5 +50,13 @@ foreach my $combo (
   like $@, qr/Can't apply Five to WithFive - missing bar/,
     ' ... with correct error message';
 }
+{
+  is eval {
+    Role::Tiny->create_class_with_roles('BaseClass', 'Five');
+  }, undef,
+    "composing an around modifier fails when method doesn't exist";
+  like $@, qr/Can't apply Five to .* - missing bar/,
+    ' ... with correct error message';
+}
 
 done_testing;

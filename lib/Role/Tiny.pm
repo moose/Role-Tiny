@@ -135,7 +135,10 @@ sub create_class_with_roles {
     require MRO::Compat;
   }
 
-  my %conflicts = %{$me->_composite_info_for(@roles)->{conflicts}};
+  my @composable = map $me->_composable_package_for($_), reverse @roles;
+
+  my $composite_info = $me->_composite_info_for(@roles);
+  my %conflicts = %{$composite_info->{conflicts}};
   if (keys %conflicts) {
     my $fail = 
       join "\n",
@@ -147,16 +150,17 @@ sub create_class_with_roles {
     die $fail;
   }
 
-  my @composable = map $me->_composable_package_for($_), reverse @roles;
-
-  *{_getglob("${new_name}::ISA")} = [ @composable, $superclass ];
-
-  my @info = map $INFO{$_}, @roles;
+  my @requires = grep {
+    my $method = $_;
+    !grep $_->can($method) && !$COMPOSED{role}{$_}{modifiers_only}{$method},
+      @composable
+  } @{$composite_info->{requires}};
 
   $me->_check_requires(
-    $new_name, $compose_name,
-    do { my %h; @h{map @{$_->{requires}||[]}, @info} = (); keys %h }
+    $superclass, $compose_name, \@requires
   );
+
+  *{_getglob("${new_name}::ISA")} = [ @composable, $superclass ];
 
   @{$APPLIED_TO{$new_name}||={}}{
     map keys %{$APPLIED_TO{$_}}, @roles
@@ -232,8 +236,11 @@ sub _composite_info_for {
       my $this_methods = $me->_concrete_methods_of($role);
       $methods{$_}{$this_methods->{$_}} = $role for keys %$this_methods;
     }
+    my %requires;
+    @requires{map @{$INFO{$_}{requires}||[]}, @roles} = ();
+    delete $requires{$_} for keys %methods;
     delete $methods{$_} for grep keys(%{$methods{$_}}) == 1, keys %methods;
-    +{ conflicts => \%methods }
+    +{ conflicts => \%methods, requires => [keys %requires] }
   };
 }
 
@@ -243,6 +250,8 @@ sub _composable_package_for {
   return $composed_name if $COMPOSED{role}{$composed_name};
   $me->_install_methods($composed_name, $role);
   my $base_name = $composed_name.'::_BASE';
+  # force stash to exist
+  _getstash($base_name);
   # Not using _getglob, since setting @ISA via the typeglob breaks
   # inheritance on 5.10.0 if the stash has previously been accessed an
   # then a method called on the class (in that order!), which
@@ -250,9 +259,9 @@ sub _composable_package_for {
   { no strict 'refs'; @{"${composed_name}::ISA"} = ( $base_name ); }
   my $modifiers = $INFO{$role}{modifiers}||[];
   my @mod_base;
-  foreach my $modified (
-    do { my %h; @h{map $_->[1], @$modifiers} = (); keys %h }
-  ) {
+  my @modifiers = grep !$composed_name->can($_),
+    do { my %h; @h{map @{$_}[1..$#$_-1], @$modifiers} = (); keys %h };
+  foreach my $modified (@modifiers) {
     push @mod_base, "sub ${modified} { shift->next::method(\@_) }";
   }
   my $e;
@@ -263,13 +272,15 @@ sub _composable_package_for {
   }
   die $e if $e;
   $me->_install_modifiers($composed_name, $role);
-  $COMPOSED{role}{$composed_name} = 1;
+  $COMPOSED{role}{$composed_name} = {
+    modifiers_only => { map { $_ => 1 } @modifiers },
+  };
   return $composed_name;
 }
 
 sub _check_requires {
-  my ($me, $to, $name) = @_;
-  return unless my @requires = @{$INFO{$name}{requires}||[]};
+  my ($me, $to, $name, $requires) = @_;
+  return unless my @requires = @{$requires||$INFO{$name}{requires}||[]};
   if (my @requires_fail = grep !$to->can($_), @requires) {
     # role -> role, add to requires, role -> class, error out
     if (my $to_info = $INFO{$to}) {
