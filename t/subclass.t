@@ -96,13 +96,16 @@ ok eval { RoleExtension3->create_class_with_roles('Class2', 'Role3') },
 ok !eval { RoleExtension3->create_class_with_roles('Class2', 'Role4'); },
   'requires checked properly during create_class_with_roles';
 
-{
+SKIP: {
+  skip "Class::Method::Modifiers not installed or too old", 1
+    unless eval "use Class::Method::Modifiers 1.05; 1";
   package Role5;
   $INC{'Role5.pm'} = __FILE__;
   use Role::Tiny;
   around extra_sub2 => sub { my $orig = shift; $orig->(@_); };
+
+  ::ok !eval { RoleExtension3->create_class_with_roles('Class3', 'Role4'); },
+    'requires checked properly during create_class_with_roles';
 }
-ok !eval { RoleExtension3->create_class_with_roles('Class3', 'Role4'); },
-  'requires checked properly during create_class_with_roles';
 
 done_testing;

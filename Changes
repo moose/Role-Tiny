@@ -1,3 +1,5 @@
+  - fix test accidentally requiring Class::Method::Modifiers
+
 1.003000 - 2013-07-14
   - allow composing roles simultaneously that mutually require each other
     (RT#82711)
