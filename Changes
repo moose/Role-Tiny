@@ -1,3 +1,4 @@
+1.003000 - 2013-07-14
   - allow composing roles simultaneously that mutually require each other
     (RT#82711)
   - Fix _concrete_methods_of returning non-CODE entries
