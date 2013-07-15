@@ -1,5 +1,3 @@
-#!/usr/bin/env perl
-
 use lib 'lib', 't/role-basic/lib', 't/lib';
 use MyTests;
 
