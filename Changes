@@ -1,5 +1,5 @@
-  - allow composing roles simultaneously that require methods provided by the
-    other (RT#82711)
+  - allow composing roles simultaneously that mutually require each other
+    (RT#82711)
   - Fix _concrete_methods_of returning non-CODE entries
   - fix broken implementation of method conflict resolution
     (Perlmonks#1041015)
