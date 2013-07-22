@@ -1,7 +1,9 @@
-1.003001 - 2013-07-14
+Revision history for Role-Tiny
+
+1.003001   2013-07-14
   - fix test accidentally requiring Class::Method::Modifiers
 
-1.003000 - 2013-07-14
+1.003000   2013-07-14
   - allow composing roles simultaneously that mutually require each other
     (RT#82711)
   - Fix _concrete_methods_of returning non-CODE entries
@@ -10,67 +12,67 @@
   - add is_role method for checking if a given package is a role
   - drop minimum perl version - code tests just fine on 5.6.1 and 5.6.2
 
-1.002005 - 2013-02-01
+1.002005   2013-02-01
   - complain loudly if Class::Method::Modifiers is too old (and skip tests)
   - don't use $_ as loop variable when calling arbitrary code
 
-1.002004 - 2012-11-02
+1.002004   2012-11-02
   - remove accidentally-introduced strictures.pm usage
 
-1.002003 - 2012-10-29
+1.002003   2012-10-29
   - fix method modifier breakage on 5.10.0
 
-1.002002 - 2012-10-28
+1.002002   2012-10-28
   - skip t/around-does.t when Class::Method::Modifiers is not installed
     (RT#80310)
 
-1.002001 - 2012-10-26
+1.002001   2012-10-26
   - t/does-Moo.t moved to 'xt' (RT#80290)
   - don't die when looking for 'DOES' on perl < 5.10 (RT#80402)
 
-1.002000 - 2012-10-19
+1.002000   2012-10-19
   - load class in addition to roles when using create_class_from_roles
   - fix module name in Makefile.PL (RT#78591)
   - when classes consume roles, override their DOES method (RT#79747)
   - method modifiers can be used for 'does' and 'DOES'
 
-1.001005 - 2012-07-18
+1.001005   2012-07-18
   - localize UNIVERSAL::can change to avoid confusing TB2
   - properly report roles consumed by superclasses
 
-1.001004 - 2012-07-12
+1.001004   2012-07-12
   - remove strictures.pm from the test supplied by mmcleric so we install again
   - when applying runtime roles include roles from original class in new class
     ( fixes ::does_role checks)
 
-1.001003 - 2012-06-19
+1.001003   2012-06-19
   - correctly apply modifiers with role composition
   - check for conflicts during role-to-object application (test from mmcleric)
   - add an explicit return to all exported subs so people don't accidentally
     rely on the return value
   - store coderefs as well as their refaddrs to protect against crazy
 
-1.001002 - 2012-05-05
+1.001002   2012-05-05
   - alter duplication test to not provoke Class::Method::Modifiers loading
 
-1.001001 - 2012-04-27
+1.001001   2012-04-27
   - remove strictures from one last test file
 
-1.001000 - 2012-04-27
+1.001000   2012-04-27
   - Documentation improvements, no code changes
 
-1.000_901 - 2012-04-12
+1.000_901   2012-04-12
   - Fix MANIFEST inclusion of Role::Basic composition
 
-1.000_900 - 2012-04-11
+1.000_900   2012-04-11
   - Add composition with tests stolen from Role::Basic
 
-1.000001 - 2012-04-03
+1.000001   2012-04-03
   - Document that Class::Method::Modifiers must be depended on separately
   - Update tests so that they skip correctly without C::M::M
   - Add a SEE ALSO section
 
-1.000000 - 2012-03-29
+1.000000   2012-03-29
   - Remove redundant code in create_class_with_roles
   - Minor doc fix to does_role
   - Split Role::Tiny out into its own dist
@@ -87,25 +89,25 @@ Changes below this line are from when Role::Tiny was still bundled with Moo:
   - Explicitly require Role::Tiny in Role::Tiny::With (RT#70446)
   - Fix spurious 'once' warnings under perl -w
 
-0.009013 - 2011-12-23
+0.009013   2011-12-23
   - fix up Class::XSAccessor version check to be more robust
   - improved documentation
   - fix failures on perls < 5.8.3
   - fix test failures on cygwin
 
-0.009012 - 2011-11-15
+0.009012   2011-11-15
   - make Method::Generate::Constructor handle $obj->new
   - fix bug where constants containing a reference weren't handled correctly
     (ref(\[]) is 'REF' not 'SCALAR', ref(\v1) is 'VSTRING')
 
-0.009011 - 2011-10-03
+0.009011   2011-10-03
   - add support for DEMOLISH
   - add support for BUILDARGS
 
-0.009010 - 2011-07-20
+0.009010   2011-07-20
   - missing new files for Role::Tiny::With
 
-0.009009 - 2011-07-20
+0.009009   2011-07-20
   - remove the big scary warning because we seem to be mostly working now
   - perl based getter dies if @_ > 1 (XSAccessor already did)
   - add Role::Tiny::With for use in classes
@@ -113,14 +115,14 @@ Changes below this line are from when Role::Tiny was still bundled with Moo:
     subclasses with a BUILD method but no attributes get it honoured
   - add coerce handling
 
-0.009008 - 2011-06-03
+0.009008   2011-06-03
   - transfer fix to _load_module to Role::Tiny and make a note it's an inline
   - Bring back 5.8.1 compat
 
-0.009007 - 2011-02-25
+0.009007   2011-02-25
   - I botched the copyright. re-disting.
 
-0.009006 - 2011-02-25
+0.009006   2011-02-25
   - handle non-lazy default and builder when init_arg is undef
   - add copyright and license info for downstream packagers
   - weak ref checking for Sub::Quote to avoid bugs on refaddr reuse
