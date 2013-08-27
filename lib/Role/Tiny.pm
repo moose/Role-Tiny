@@ -104,6 +104,21 @@ sub apply_roles_to_object {
   $object;
 }
 
+my $role_suffix = 'A000';
+sub _composite_name {
+  my ($me, $superclass, @roles) = @_;
+
+  my $new_name = join(
+    '__WITH__', $superclass, my $compose_name = join '__AND__', @roles
+  );
+
+  if (length($new_name) > 252) {
+    $new_name = $COMPOSED{abbrev}{$new_name}
+      ||= substr($new_name, 0, 250 - length $role_suffix).'__'.$role_suffix++;
+  }
+  return wantarray ? ($new_name, $compose_name) : $new_name;
+}
+
 sub create_class_with_roles {
   my ($me, $superclass, @roles) = @_;
 
@@ -118,9 +133,7 @@ sub create_class_with_roles {
     }
   }
 
-  my $new_name = join(
-    '__WITH__', $superclass, my $compose_name = join '__AND__', @roles
-  );
+  my ($new_name, $compose_name) = $me->_composite_name($superclass, @roles);
 
   return $new_name if $COMPOSED{class}{$new_name};
 
