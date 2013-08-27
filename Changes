@@ -1,5 +1,7 @@
 Revision history for Role-Tiny
 
+  - abbreviate generated package names if they are longer than perl can handle
+    (RT#83248)
   - add explicit dependency on the version of Exporter that added 'import'
 
 1.003001   2013-07-14
