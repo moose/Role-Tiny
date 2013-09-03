@@ -22,22 +22,17 @@ WriteMakefile(
   },
   $mymeta_works ? (BUILD_REQUIRES => \%BUILD_DEPS) : (),
 
+  META_ADD => {
+    resources => {
+      # r/w: gitmo@git.shadowcat.co.uk:Role-Tiny.git
+      repository => 'git://git.shadowcat.co.uk/gitmo/Role-Tiny.git',
+    },
+  },
+
   META_MERGE => {
     'meta-spec' => { version => 2 },
     no_index => {
       directory => [ 'xt' ]
-    },
-    resources => {
-      # r/w: gitmo@git.shadowcat.co.uk:Role-Tiny.git
-      repository => {
-        url => 'git://git.shadowcat.co.uk/gitmo/Role-Tiny.git',
-        web => 'http://git.shadowcat.co.uk/gitweb/gitweb.cgi?p=gitmo/Role-Tiny.git',
-        type => 'git',
-      },
-      bugtracker => {
-          mailto => 'bug-Role-Tiny@rt.cpan.org',
-          web => 'https://rt.cpan.org/Public/Dist/Display.html?Name=Role-Tiny',
-      },
-    },
+    }
   },
 );
