@@ -10,7 +10,8 @@ my %BUILD_DEPS = (
 );
 
 # have to do this since old EUMM dev releases miss the eval $VERSION line
-my $mymeta_works = do { no warnings; $ExtUtils::MakeMaker::VERSION >= 6.5707 };
+my $mymeta = eval($ExtUtils::MakeMaker::VERSION) >= 6.57_02;
+my $mymeta_works = eval($ExtUtils::MakeMaker::VERSION) >= 6.57_07;
 
 WriteMakefile(
   NAME => 'Role::Tiny',
@@ -21,6 +22,7 @@ WriteMakefile(
     ($mymeta_works ? () : (%BUILD_DEPS)),
   },
   $mymeta_works ? (BUILD_REQUIRES => \%BUILD_DEPS) : (),
+  ($mymeta && !$mymeta_works ? (NO_MYMETA => 1) : ()),
 
   -f 'META.yml' ? () : (META_MERGE => {
     'meta-spec' => { version => 2 },
