@@ -43,7 +43,7 @@ sub import {
   my $me = shift;
   strict->import;
   warnings->import(FATAL => 'all');
-  return if $INFO{$target}; # already exported into this package
+  return if $me->is_role($target); # already exported into this package
   $INFO{$target}{is_role} = 1;
   # get symbol table reference
   my $stash = _getstash($target);
@@ -83,7 +83,7 @@ sub apply_single_role_to_package {
   _load_module($role);
 
   die "This is apply_role_to_package" if ref($to);
-  die "${role} is not a Role::Tiny" unless $INFO{$role};
+  die "${role} is not a Role::Tiny" unless $me->is_role($role);
 
   foreach my $step ($me->role_application_steps) {
     $me->$step($to, $role);
@@ -139,7 +139,7 @@ sub create_class_with_roles {
 
   foreach my $role (@roles) {
     _load_module($role);
-    die "${role} is not a Role::Tiny" unless $INFO{$role};
+    die "${role} is not a Role::Tiny" unless $me->is_role($role);
   }
 
   if ($] >= 5.010) {
@@ -338,8 +338,8 @@ sub _concrete_methods_of {
 
 sub methods_provided_by {
   my ($me, $role) = @_;
-  die "${role} is not a Role::Tiny" unless my $info = $INFO{$role};
-  (keys %{$me->_concrete_methods_of($role)}, @{$info->{requires}||[]});
+  die "${role} is not a Role::Tiny" unless $me->is_role($role);
+  (keys %{$me->_concrete_methods_of($role)}, @{$INFO{$role}->{requires}||[]});
 }
 
 sub _install_methods {
@@ -398,7 +398,7 @@ sub _install_does {
   my ($me, $to) = @_;
   
   # only add does() method to classes
-  return if $INFO{$to};
+  return if $me->is_role($to);
   
   # add does() only if they don't have one
   *{_getglob "${to}::does"} = \&does_role unless $to->can('does');
