@@ -201,4 +201,35 @@ SKIP: {
 	is $success, 1, 'composed diamantly dependent roles successfully' or diag "Error: $@";
 }
 
+{
+    {
+        package My::Does::Conflict;
+        use Role::Tiny;
+
+        sub method {
+            return __PACKAGE__ . " method";
+        }
+    }
+    {
+        package My::Class::Base;
+
+        sub turbo_charger {
+            return __PACKAGE__ . " turbo charger";
+        }
+        sub method {
+            return __PACKAGE__ . " method";
+        }
+    }
+    my $success = eval q{
+        package My::Class::Child;
+        use base 'My::Class::Base';
+        use Role::Tiny::With;
+        with qw/My::Does::Basic1 My::Does::Conflict/;
+        1;
+    };
+    is $success, 1, 'role conflict resolved by superclass method' or diag "Error: $@";
+    can_ok 'My::Class::Child', 'method';
+    is My::Class::Child->method, 'My::Class::Base method', 'inherited method prevails';
+}
+
 done_testing;
