@@ -418,7 +418,7 @@ sub does_role {
 
 sub is_role {
   my ($me, $role) = @_;
-  return !!$INFO{$role};
+  return !!($INFO{$role} && $INFO{$role}{is_role});
 }
 
 1;
