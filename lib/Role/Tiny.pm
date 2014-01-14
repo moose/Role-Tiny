@@ -661,6 +661,8 @@ ilmari - Dagfinn Ilmari Mannsåker (cpan:ILMARI) <ilmari@ilmari.org>
 
 tobyink - Toby Inkster (cpan:TOBYINK) <tobyink@cpan.org>
 
+haarg - Graham Knop (cpan:HAARG) <haarg@haarg.org>
+
 =head1 COPYRIGHT
 
 Copyright (c) 2010-2012 the Role::Tiny L</AUTHOR> and L</CONTRIBUTORS>
