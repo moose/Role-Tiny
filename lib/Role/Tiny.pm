@@ -396,15 +396,16 @@ sub _install_single_modifier {
 my $FALLBACK = sub { 0 };
 sub _install_does {
   my ($me, $to) = @_;
-  
+
   # only add does() method to classes
   return if $me->is_role($to);
-  
+
   # add does() only if they don't have one
   *{_getglob "${to}::does"} = \&does_role unless $to->can('does');
-  
-  return if ($to->can('DOES') and $to->can('DOES') != (UNIVERSAL->can('DOES') || 0));
-  
+
+  return
+    if $to->can('DOES') and $to->can('DOES') != (UNIVERSAL->can('DOES') || 0);
+
   my $existing = $to->can('DOES') || $to->can('isa') || $FALLBACK;
   my $new_sub = sub {
     my ($proto, $role) = @_;
