@@ -504,6 +504,9 @@ a method since this conflict indicates a potential problem.
 
 =head1 IMPORTED SUBROUTINES
 
+In addition to importing subroutines, using C<Role::Tiny> applies L<strict> and
+L<fatal warnings|perllexwarn/Fatal Warnings> to the caller.
+
 =head2 requires
 
  requires qw(foo bar);
