@@ -504,9 +504,6 @@ a method since this conflict indicates a potential problem.
 
 =head1 IMPORTED SUBROUTINES
 
-In addition to importing subroutines, using C<Role::Tiny> applies L<strict> and
-L<fatal warnings|perllexwarn/Fatal Warnings> to the caller.
-
 =head2 requires
 
  requires qw(foo bar);
@@ -565,6 +562,15 @@ Note that since you are not required to use method modifiers,
 L<Class::Method::Modifiers> is lazily loaded and we do not declare it as
 a dependency. If your L<Role::Tiny> role uses modifiers you must depend on
 both L<Class::Method::Modifiers> and L<Role::Tiny>.
+
+=head2 Strict and Warnings
+
+In addition to importing subroutines, using C<Role::Tiny> applies L<strict> and
+L<fatal warnings|perllexwarn/Fatal Warnings> to the caller.  It's possible to
+disable these if desired:
+
+ use Role::Tiny;
+ use warnings NONFATAL => 'all';
 
 =head1 SUBROUTINES
 
