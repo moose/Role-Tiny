@@ -2,6 +2,7 @@ Revision history for Role-Tiny
 
   - allow superclass to provide conflicting methods (RT#91054)
   - use ->is_role internally to check if a package is a role
+  - document that Role::Tiny applies strict and fatal warnings
 
 1.003002 - 2013-09-04
   - abbreviate generated package names if they are longer than perl can handle
