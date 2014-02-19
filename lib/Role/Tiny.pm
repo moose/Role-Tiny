@@ -361,7 +361,20 @@ sub _install_methods {
 
   foreach my $i (grep !exists $has_methods{$_}, keys %$methods) {
     no warnings 'once';
-    *{_getglob "${to}::${i}"} = $methods->{$i};
+    my $glob = _getglob "${to}::${i}";
+    *$glob = $methods->{$i};
+
+    # overloads using method names have the method stored in the scalar slot
+    next
+      unless $i =~ /^\(/
+        && defined &overload::nil
+        && $methods->{$i} == \&overload::nil;
+
+    my $overload = ${ *{_getglob "${role}::${i}"}{SCALAR} };
+    next
+      unless defined $overload;
+
+    *$glob = \$overload;
   }
 
   $me->_install_does($to);
