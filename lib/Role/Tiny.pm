@@ -363,7 +363,7 @@ sub _install_methods {
     no warnings 'once';
     *{_getglob "${to}::${i}"} = $methods->{$i};
   }
-  
+
   $me->_install_does($to);
 }
 
