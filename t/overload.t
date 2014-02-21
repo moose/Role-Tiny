@@ -22,9 +22,21 @@ BEGIN {
   sub new { bless {}, shift }
 }
 
+BEGIN {
+  package MyClass2;
+  use overload fallback => 0;
+  use Role::Tiny::With;
+  with 'MyRole';
+  sub new { bless {}, shift }
+}
+
 my $o = MyClass->new;
 is "$o", 'welp', 'subref overload';
 is 0+$o, 219, 'method name overload';
 ok !!$o, 'anon subref overload';
+
+my $o2 = MyClass2->new;
+eval { my $f = 0+$o2 };
+like $@, qr/no method found/, 'fallback value not overwritten';
 
 done_testing;
