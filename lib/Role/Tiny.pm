@@ -652,12 +652,8 @@ overloads from the role to all copies of the object.
 L<Role::Tiny> is the attribute-less subset of L<Moo::Role>; L<Moo::Role> is
 a meta-protocol-less subset of the king of role systems, L<Moose::Role>.
 
-If you don't want method modifiers and do want to be forcibly restricted
-to a single role application per class, Ovid's L<Role::Basic> exists. But
-Stevan Little (the L<Moose> author) and I don't find the additional
-restrictions to be amazingly helpful in most cases; L<Role::Basic>'s choices
-are more a guide to what you should prefer doing, to our mind, rather than
-something that needs to be enforced.
+Ovid's L<Role::Basic> provides roles with a similar scope, but without method
+modifiers, and having some extra usage restrictions.
 
 =head1 AUTHOR
 
