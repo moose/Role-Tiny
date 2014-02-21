@@ -1,5 +1,7 @@
 Revision history for Role-Tiny
 
+  - overloads specified as method names rather than subrefs are now applied
+    properly
   - allow superclass to provide conflicting methods (RT#91054)
   - use ->is_role internally to check if a package is a role
   - document that Role::Tiny applies strict and fatal warnings
