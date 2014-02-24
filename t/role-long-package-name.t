@@ -35,8 +35,8 @@ for (qw(
 }
 
 my $pkg = ref $foo;
-note $pkg;
 eval "package $pkg;";
-ok(!$@) or diag $@;
+is $@, '', 'package name usable by perl'
+  or diag "package: $pkg";
 
 done_testing;
