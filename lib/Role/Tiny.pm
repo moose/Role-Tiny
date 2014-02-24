@@ -100,8 +100,9 @@ sub apply_roles_to_object {
   my ($me, $object, @roles) = @_;
   die "No roles supplied!" unless @roles;
   my $class = ref($object);
-  bless($object, $me->create_class_with_roles($class, @roles));
-  $object;
+  # on perl < 5.8.9, magic isn't copied to all ref copies. bless the parameter
+  # directly, so at least the variable passed to us will get any magic applied
+  bless($_[1], $me->create_class_with_roles($class, @roles));
 }
 
 my $role_suffix = 'A000';
@@ -365,6 +366,7 @@ sub _install_methods {
     *$glob = $methods->{$i};
 
     # overloads using method names have the method stored in the scalar slot
+    # and &overload::nil in the code slot.
     next
       unless $i =~ /^\(/
         && defined &overload::nil
@@ -637,6 +639,13 @@ New class is returned.
  Role::Tiny->is_role('Some::Role1')
 
 Returns true if the given package is a role.
+
+=head1 CAVEATS
+
+=over 4
+
+=item * On perl 5.8.8 and earlier, applying a role to an object won't apply any
+overloads from the role to all copies of the object.
 
 =head1 SEE ALSO
 
