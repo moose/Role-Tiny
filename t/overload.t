@@ -35,6 +35,11 @@ BEGIN {
   sub class_string { 'yarp' }
 }
 
+BEGIN {
+  package MyClass3;
+  sub new { bless {}, shift }
+}
+
 {
   my $o = MyClass->new;
   is "$o", 'welp', 'subref overload';
@@ -48,6 +53,21 @@ BEGIN {
   like $@, qr/no method found/, 'fallback value not overwritten';
   is "$o", 'yarp', 'method name overload not overwritten';
   is sprintf('%d', $o), 42, 'subref overload not overwritten';
+}
+
+{
+  my @o = (MyClass3->new) x 2;
+  my $copy = '';
+  for my $o (@o) {
+    Role::Tiny->apply_roles_to_object($o, 'MyRole')
+      unless $copy;
+    local $TODO = 'magic not applied to all ref copies on perl < 5.8.9'
+      if $copy && $] < 5.008009;
+    is "$o", 'welp', 'subref overload applied to instance'.$copy;
+    is sprintf('%d', $o), 219, 'method name overload applied to instance'.$copy;
+    ok !$o, 'anon subref overload applied to instance'.$copy;
+    $copy ||= ' copy';
+  }
 }
 
 done_testing;
