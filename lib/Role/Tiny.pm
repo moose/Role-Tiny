@@ -13,6 +13,7 @@ our %INFO;
 our %APPLIED_TO;
 our %COMPOSED;
 our %COMPOSITE_INFO;
+our @ON_ROLE_CREATE;
 
 # Module state workaround totally stolen from Zefram's Module::Runtime.
 
@@ -72,6 +73,7 @@ sub import {
   @{$INFO{$target}{not_methods}={}}{@not_methods} = @not_methods;
   # a role does itself
   $APPLIED_TO{$target} = { $target => undef };
+  $_->($target) for @ON_ROLE_CREATE;
 }
 
 sub role_application_steps {
