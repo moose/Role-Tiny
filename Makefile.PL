@@ -26,6 +26,7 @@ my %META = (
     },
     develop => { requires => {
       Moo => 0,
+      ($] >= 5.008004 ? () : ('namespace::clean' => 0)),
     } },
   },
   resources => {
