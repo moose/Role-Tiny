@@ -25,7 +25,9 @@ install:
 before_script:
   - coverage-setup
 script:
-  - prove -lv $(test-dirs)
+  - perl Makefile.PL
+  - make
+  - make test TEST_VERBOSE=1 TEST_FILES="$(test-files)"
 after_success:
   - coverage-report
 branches:
