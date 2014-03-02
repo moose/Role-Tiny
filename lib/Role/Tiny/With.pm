@@ -2,6 +2,10 @@ package Role::Tiny::With;
 
 use strict;
 use warnings FATAL => 'all';
+
+our $VERSION = '1.003002';
+$VERSION = eval $VERSION;
+
 use Role::Tiny ();
 
 use Exporter 'import';
