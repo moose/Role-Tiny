@@ -18,6 +18,7 @@ our %COMPOSITE_INFO;
 
 BEGIN {
   *_WORK_AROUND_BROKEN_MODULE_STATE = "$]" < 5.009 ? sub(){1} : sub(){0};
+  *_MRO_MODULE = "$]" < 5.010 ? sub(){"MRO/Compat.pm"} : sub(){"mro.pm"};
 }
 
 sub Role::Tiny::__GUARD__::DESTROY {
@@ -143,11 +144,7 @@ sub create_class_with_roles {
     die "${role} is not a Role::Tiny" unless $me->is_role($role);
   }
 
-  if ($] >= 5.010) {
-    require mro;
-  } else {
-    require MRO::Compat;
-  }
+  require(_MRO_MODULE);
 
   my $composite_info = $me->_composite_info_for(@roles);
   my %conflicts = %{$composite_info->{conflicts}};
@@ -432,11 +429,7 @@ sub _install_does {
 
 sub does_role {
   my ($proto, $role) = @_;
-  if ($] >= 5.010) {
-    require mro;
-  } else {
-    require MRO::Compat;
-  }
+  require(_MRO_MODULE);
   foreach my $class (@{mro::get_linear_isa(ref($proto)||$proto)}) {
     return 1 if exists $APPLIED_TO{$class}{$role};
   }
