@@ -152,7 +152,7 @@ sub create_class_with_roles {
   my $composite_info = $me->_composite_info_for(@roles);
   my %conflicts = %{$composite_info->{conflicts}};
   if (keys %conflicts) {
-    my $fail = 
+    my $fail =
       join "\n",
         map {
           "Method name conflict for '$_' between roles "
@@ -203,7 +203,7 @@ sub apply_roles_to_package {
   delete @conflicts{@have};
 
   if (keys %conflicts) {
-    my $fail = 
+    my $fail =
       join "\n",
         map {
           "Due to a method name conflict between roles "
@@ -449,6 +449,7 @@ sub is_role {
 }
 
 1;
+__END__
 
 =encoding utf-8
 
@@ -534,7 +535,7 @@ Declares a list of methods that must be defined to compose role.
 Composes another role into the current role (or class via L<Role::Tiny::With>).
 
 If you have conflicts and want to resolve them in favour of Some::Role1 you
-can instead write: 
+can instead write:
 
  with 'Some::Role1';
  with 'Some::Role2';
