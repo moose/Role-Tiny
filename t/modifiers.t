@@ -45,6 +45,19 @@ BEGIN {
   around 'broken modifier' => sub { my $orig = shift; $orig->(@_) };
 }
 
+BEGIN {
+  package MyRole2;
+  use Role::Tiny;
+  with 'MyRole';
+}
+
+BEGIN {
+  package ExtraClass2;
+  use Role::Tiny::With;
+  with 'MyRole2';
+  sub foo { 'class foo' }
+}
+
 sub try_apply_to {
   my $to = shift;
   exception { Role::Tiny->apply_role_to_package($to, 'MyRole') }
@@ -53,6 +66,9 @@ sub try_apply_to {
 is(try_apply_to('MyClass'), undef, 'role applies cleanly');
 is(MyClass->foo, 'role foo class foo', 'method modifier');
 is(ExtraClass->foo, 'role foo class foo', 'method modifier with composition');
+
+is(ExtraClass2->foo, 'role foo class foo',
+  'method modifier with role composed into role');
 
 ok(exception {
     my $new_class = Role::Tiny->create_class_with_roles('MyClass', 'BrokenRole');
