@@ -641,6 +641,8 @@ Returns true if the given package is a role.
 =item * On perl 5.8.8 and earlier, applying a role to an object won't apply any
 overloads from the role to all copies of the object.
 
+=back
+
 =head1 SEE ALSO
 
 L<Role::Tiny> is the attribute-less subset of L<Moo::Role>; L<Moo::Role> is
