@@ -1,5 +1,6 @@
 Revision history for Role-Tiny
 
+1.003003 - 2014-03-15
   - overloads specified as method names rather than subrefs are now applied
     properly
   - allow superclass to provide conflicting methods (RT#91054)
