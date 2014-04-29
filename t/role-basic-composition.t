@@ -1,5 +1,5 @@
 use lib 'lib', 't/role-basic/lib';
-use MyTests;
+use Test::More;
 require Role::Tiny;
 
 {

@@ -1,5 +1,6 @@
 use lib 'lib', 't/role-basic/lib', 't/lib';
-use MyTests;
+use Test::More;
+use Test::Fatal;
 
 # multiple roles with the same role
 {
