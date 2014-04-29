@@ -1,5 +1,5 @@
 use Test::More tests => 3;
-use lib 'lib', 't/role-basic/lib';
+use lib 't/role-basic/lib';
 
 use_ok 'My::Example' or BAIL_OUT 'Could not load test module My::Example';
 can_ok 'My::Example', 'no_conflict';

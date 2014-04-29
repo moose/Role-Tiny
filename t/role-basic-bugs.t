@@ -1,4 +1,4 @@
-use lib 'lib', 't/role-basic/lib', 't/lib';
+use lib 't/role-basic/lib', 't/lib';
 use Test::More;
 use Test::Fatal;
 

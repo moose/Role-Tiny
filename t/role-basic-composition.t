@@ -1,4 +1,4 @@
-use lib 'lib', 't/role-basic/lib';
+use lib 't/role-basic/lib';
 use Test::More;
 require Role::Tiny;
 
