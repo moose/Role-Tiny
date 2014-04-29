@@ -122,83 +122,83 @@ $ENV{DEBUG} = 1;
 }
 
 {
-	{
-		package Method::Role1;
-		use Role::Tiny;
-		sub method1 { }
-		requires 'method2';
-	}
+    {
+        package Method::Role1;
+        use Role::Tiny;
+        sub method1 { }
+        requires 'method2';
+    }
 
-	{
-		package Method::Role2;
-		use Role::Tiny;
-		sub method2 { }
-		requires 'method1';
-	}
-	my $success = eval q{
-		package Class;
-		use Role::Tiny::With;
-		with 'Method::Role1', 'Method::Role2';
-		1;
-	};
-	is $success, 1, 'composed mutually dependent methods successfully' or diag "Error: $@";
+    {
+        package Method::Role2;
+        use Role::Tiny;
+        sub method2 { }
+        requires 'method1';
+    }
+    my $success = eval q{
+        package Class;
+        use Role::Tiny::With;
+        with 'Method::Role1', 'Method::Role2';
+        1;
+    };
+    is $success, 1, 'composed mutually dependent methods successfully' or diag "Error: $@";
 }
 
 SKIP: {
   skip "Class::Method::Modifiers not installed or too old", 1
     unless eval "use Class::Method::Modifiers 1.05; 1";
-	{
-		package Modifier::Role1;
-		use Role::Tiny;
-		sub foo {
-		}
-		before 'bar', sub {};
-	}
+    {
+        package Modifier::Role1;
+        use Role::Tiny;
+        sub foo {
+        }
+        before 'bar', sub {};
+    }
 
-	{
-		package Modifier::Role2;
-		use Role::Tiny;
-		sub bar {
-		}
-		before 'foo', sub {};
-	}
-	my $success = eval q{
-		package Class;
-		use Role::Tiny::With;
-		with 'Modifier::Role1', 'Modifier::Role2';
-		1;
-	};
-	is $success, 1, 'composed mutually dependent modifiers successfully' or diag "Error: $@";
+    {
+        package Modifier::Role2;
+        use Role::Tiny;
+        sub bar {
+        }
+        before 'foo', sub {};
+    }
+    my $success = eval q{
+        package Class;
+        use Role::Tiny::With;
+        with 'Modifier::Role1', 'Modifier::Role2';
+        1;
+    };
+    is $success, 1, 'composed mutually dependent modifiers successfully' or diag "Error: $@";
 }
 
 {
-	{
-		package Base::Role;
-		use Role::Tiny;
-		requires qw/method1 method2/;
-	}
+    {
+        package Base::Role;
+        use Role::Tiny;
+        requires qw/method1 method2/;
+    }
 
-	{
-		package Sub::Role1;
-		use Role::Tiny;
-		with 'Base::Role';
-		sub method1 {}
-	}
+    {
+        package Sub::Role1;
+        use Role::Tiny;
+        with 'Base::Role';
+        sub method1 {}
+    }
 
-	{
-		package Sub::Role2;
-		use Role::Tiny;
-		with 'Base::Role';
-		sub method2 {}
-	}
+    {
+        package Sub::Role2;
+        use Role::Tiny;
+        with 'Base::Role';
+        sub method2 {}
+    }
 
-	my $success = eval q{
-		package Diamant::Class;
-		use Role::Tiny::With;
-		with qw/Sub::Role1 Sub::Role2/;
-		1;
-	};
-	is $success, 1, 'composed diamantly dependent roles successfully' or diag "Error: $@";
+    my $success = eval q{
+        package Diamant::Class;
+        use Role::Tiny::With;
+        with qw/Sub::Role1 Sub::Role2/;
+        1;
+    };
+    is $success, 1, 'composed diamantly dependent roles successfully' or diag "Error: $@";
 }
 
 {

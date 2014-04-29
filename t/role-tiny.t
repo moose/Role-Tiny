@@ -97,4 +97,3 @@ ok(!Role::Tiny->is_role('MyClass'), 'is_role false for classes');
 
 
 done_testing;
-

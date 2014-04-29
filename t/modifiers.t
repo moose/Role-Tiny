@@ -75,4 +75,3 @@ ok(exception {
 }, 'exception caught creating class with broken modifier in a role');
 
 done_testing;
-
