@@ -11,21 +11,21 @@ my %META = (
     build => { requires => {
     } },
     test => { requires => {
-      'Test::More' => 0.96,
-      'Test::Fatal' => 0.003,
+      'Test::More' => '0.96',
+      'Test::Fatal' => '0.003',
     } },
     runtime => {
       requires => {
-        perl     => 5.006,
-        Exporter => '5.57',
+        'perl'     => '5.006',
+        'Exporter' => '5.57',
       },
       recommends => {
-        'Class::Method::Modifiers' => 1.05,
+        'Class::Method::Modifiers' => '1.05',
       },
     },
     develop => { recommends => {
       'namespace::clean' => 0,
-      Moo => 0,
+      'Moo' => 0,
     } },
   },
   resources => {
