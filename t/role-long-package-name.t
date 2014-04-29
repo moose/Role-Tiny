@@ -1,5 +1,5 @@
 use strict;
-use warnings;
+use warnings FATAL => 'all';
 use Test::More;
 
 # using Role::Tiny->apply_roles_to_object with too many roles,

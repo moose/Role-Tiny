@@ -1,3 +1,5 @@
+use strict;
+use warnings FATAL => 'all';
 use lib 't/role-basic/lib', 't/lib';
 use Test::More;
 use Test::Fatal;
