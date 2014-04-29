@@ -29,10 +29,9 @@ my %META = (
     } },
   },
   resources => {
-    # r/w: gitmo@git.shadowcat.co.uk:Role-Tiny.git
     repository => {
-      url => 'git://git.shadowcat.co.uk/gitmo/Role-Tiny.git',
-      web => 'http://git.shadowcat.co.uk/gitweb/gitweb.cgi?p=gitmo/Role-Tiny.git',
+      url => 'git://github.com/moose/Role-Tiny.git',
+      web => 'https://github.com/moose/Role-Tiny',
       type => 'git',
     },
     bugtracker => {
