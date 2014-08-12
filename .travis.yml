@@ -29,7 +29,7 @@ install:
 before_script:
   - coverage-setup
 script:
-  - prove -l $(test-files)
+  - prove -lv $(test-files)
 after_success:
   - coverage-report
 branches:
