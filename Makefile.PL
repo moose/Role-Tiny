@@ -4,7 +4,6 @@ use 5.006;
 
 my %META = (
   name => 'Role-Tiny',
-  license => 'perl_5',
   prereqs => {
     configure => { requires => {
     } },
