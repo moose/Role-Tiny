@@ -5,10 +5,6 @@ use 5.006;
 my %META = (
   name => 'Role-Tiny',
   prereqs => {
-    configure => { requires => {
-    } },
-    build => { requires => {
-    } },
     test => { requires => {
       'Test::More' => '0.96',
       'Test::Fatal' => '0.003',
@@ -52,7 +48,7 @@ my %MM_ARGS = (
   realclean => { FILES => [ 'Distar/', 'MANIFEST*' ] },
 );
 
-##############################################################################
+## BOILERPLATE ###############################################################
 require ExtUtils::MakeMaker;
 (do 'maint/Makefile.PL.include' or die $@) unless -f 'META.yml';
 
@@ -93,3 +89,4 @@ delete $MM_ARGS{CONFIGURE_REQUIRES}
   if $eumm_version < 6.51_03;
 
 ExtUtils::MakeMaker::WriteMakefile(%MM_ARGS);
+## END BOILERPLATE ###########################################################
