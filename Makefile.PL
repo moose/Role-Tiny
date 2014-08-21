@@ -45,7 +45,6 @@ my %MM_ARGS = (
   PREREQ_PM => {
     ($] >= 5.010 ? () : ('MRO::Compat' => 0)),
   },
-  realclean => { FILES => [ 'Distar/', 'MANIFEST*' ] },
 );
 
 ## BOILERPLATE ###############################################################
