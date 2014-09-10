@@ -368,8 +368,8 @@ sub _install_methods {
     # and &overload::nil in the code slot.
     next
       unless $i =~ /^\(/
-        && defined &overload::nil
-        && $methods->{$i} == \&overload::nil;
+        && ((defined &overload::nil && $methods->{$i} == \&overload::nil)
+            || (defined &overload::_nil && $methods->{$i} == \&overload::_nil));
 
     my $overload = ${ *{_getglob "${role}::${i}"}{SCALAR} };
     next
