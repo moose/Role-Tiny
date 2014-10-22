@@ -414,8 +414,9 @@ sub _install_does {
   # only add does() method to classes
   return if $me->is_role($to);
 
+  my $does = $me->can('does_role');
   # add does() only if they don't have one
-  *{_getglob "${to}::does"} = \&does_role unless $to->can('does');
+  *{_getglob "${to}::does"} = $does unless $to->can('does');
 
   return
     if $to->can('DOES') and $to->can('DOES') != (UNIVERSAL->can('DOES') || 0);
@@ -423,7 +424,7 @@ sub _install_does {
   my $existing = $to->can('DOES') || $to->can('isa') || $FALLBACK;
   my $new_sub = sub {
     my ($proto, $role) = @_;
-    Role::Tiny::does_role($proto, $role) or $proto->$existing($role);
+    $proto->$does($role) or $proto->$existing($role);
   };
   no warnings 'redefine';
   *{_getglob "${to}::DOES"} = $new_sub;

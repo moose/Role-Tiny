@@ -1,5 +1,7 @@
 Revision history for Role-Tiny
 
+  - allow does_role to be overridden by Moo::Role
+
 1.003003 - 2014-03-15
   - overloads specified as method names rather than subrefs are now applied
     properly
