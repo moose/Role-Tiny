@@ -1,5 +1,6 @@
 Revision history for Role-Tiny
 
+1.003004 - 2014-10-22
   - allow does_role to be overridden by Moo::Role
 
 1.003003 - 2014-03-15
