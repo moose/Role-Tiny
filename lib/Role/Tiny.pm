@@ -427,7 +427,7 @@ sub _install_does {
     $proto->$does($role) or $proto->$existing($role);
   };
   no warnings 'redefine';
-  *{_getglob "${to}::DOES"} = $new_sub;
+  return *{_getglob "${to}::DOES"} = $new_sub;
 }
 
 sub does_role {
