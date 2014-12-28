@@ -44,7 +44,7 @@ sub import {
   my $target = caller;
   my $me = shift;
   strict->import;
-  warnings->import(FATAL => 'all');
+  warnings->import;
   return if $me->is_role($target); # already exported into this package
   $INFO{$target}{is_role} = 1;
   # get symbol table reference
@@ -578,11 +578,7 @@ both L<Class::Method::Modifiers> and L<Role::Tiny>.
 =head2 Strict and Warnings
 
 In addition to importing subroutines, using C<Role::Tiny> applies L<strict> and
-L<fatal warnings|perllexwarn/Fatal Warnings> to the caller.  It's possible to
-disable these if desired:
-
- use Role::Tiny;
- use warnings NONFATAL => 'all';
+L<warnings> to the caller.
 
 =head1 SUBROUTINES
 
