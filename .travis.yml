@@ -18,21 +18,7 @@ matrix:
     - perl: dev
 sudo: false
 before_install:
-  - git clone git://github.com/haarg/perl-travis-helper ~/perl-travis-helper
-  - source ~/perl-travis-helper/init
-  - build-perl
-  - perl -V
-  - build-dist
-  - cd $BUILD_DIR
-install:
-  - cpan-install --deps
-  - cpan-install --coverage
-before_script:
-  - coverage-setup
-script:
-  - prove -lv $(test-files)
-after_success:
-  - coverage-report
+  - eval $(curl https://travis-perl.github.io/init) --auto
 branches:
   except:
     - /^wip\//
