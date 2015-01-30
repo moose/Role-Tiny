@@ -4,7 +4,7 @@ sub _getglob { \*{$_[0]} }
 sub _getstash { \%{"$_[0]::"} }
 
 use strict;
-use warnings FATAL => 'all';
+use warnings;
 
 our $VERSION = '1.003004';
 $VERSION = eval $VERSION;

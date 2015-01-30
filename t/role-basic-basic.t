@@ -1,5 +1,5 @@
 use strict;
-use warnings FATAL => 'all';
+use warnings;
 use Test::More tests => 3;
 use lib 't/role-basic/lib';
 

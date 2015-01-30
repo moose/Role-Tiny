@@ -1,7 +1,7 @@
 package Role::Tiny::With;
 
 use strict;
-use warnings FATAL => 'all';
+use warnings;
 
 our $VERSION = '1.003004';
 $VERSION = eval $VERSION;
