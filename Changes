@@ -1,5 +1,9 @@
 Revision history for Role-Tiny
 
+  * Incompatible Changes
+    - Role::Tiny no longer applies fatal warnings to roles created with it.
+      strict and non-fatal warnings will continue to be applied.
+
 1.003004 - 2014-10-22
   - allow does_role to be overridden by Moo::Role
 
