@@ -3,7 +3,7 @@ package Role::Tiny::With;
 use strict;
 use warnings;
 
-our $VERSION = '1.003004';
+our $VERSION = '1.999_001';
 $VERSION = eval $VERSION;
 
 use Role::Tiny ();
