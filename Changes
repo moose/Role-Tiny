@@ -1,6 +1,5 @@
 Revision history for Role-Tiny
 
-1.999_001 - 2015-02-01
   * Incompatible Changes
     - Role::Tiny no longer applies fatal warnings to roles created with it.
       strict and non-fatal warnings will continue to be applied.
