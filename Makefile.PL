@@ -19,7 +19,8 @@ my %META = (
       },
     },
     develop => { recommends => {
-      'namespace::clean' => 0,
+      'Class::Method::Modifiers' => '1.05',
+      'namespace::autoclean' => 0,
       'Moo' => 0,
     } },
   },
