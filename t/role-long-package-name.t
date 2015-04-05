@@ -18,25 +18,35 @@ use Test::More;
     use Role::Tiny;
 }
 
-{
-    package Foo;
-    sub new { bless {}, shift }
-}
-
-my $foo = Foo->new();
-for (qw(
+# test various lengths so abbreviation cuts off double colon
+for my $pack (qw(
+  Foo
+  Fooo
+  Foooo
+  Fooooo
+  Foooooo
+  Fooooooo
+  Foooooooo
+)) {
+  {
+    no strict 'refs';
+    *{"${pack}::new"} = sub { bless {}, $_[0] };
+  }
+  my $o = $pack->new;
+  for (qw(
     R::AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
     R::BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
     R::CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
     R::DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
     R::EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
-)) {
-    Role::Tiny->apply_roles_to_object($foo, $_);
-}
+  )) {
+    Role::Tiny->apply_roles_to_object($o, $_);
+  }
 
-my $pkg = ref $foo;
-eval "package $pkg;";
-is $@, '', 'package name usable by perl'
-  or diag "package: $pkg";
+  my $pkg = ref $o;
+  eval "package $pkg;";
+  is $@, '', 'package name usable by perl'
+    or diag "package: $pkg";
+}
 
 done_testing;

@@ -117,8 +117,11 @@ sub _composite_name {
   );
 
   if (length($new_name) > 252) {
-    $new_name = $COMPOSED{abbrev}{$new_name}
-      ||= substr($new_name, 0, 250 - length $role_suffix).'__'.$role_suffix++;
+    $new_name = $COMPOSED{abbrev}{$new_name} ||= do {
+      my $abbrev = substr $new_name, 0, 250 - length $role_suffix;
+      $abbrev =~ s/(?<!:):$//;
+      $abbrev.'__'.$role_suffix++;
+    };
   }
   return wantarray ? ($new_name, $compose_name) : $new_name;
 }
