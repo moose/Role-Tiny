@@ -2,10 +2,7 @@ use strict;
 use warnings;
 use Test::More;
 
-BEGIN {
-    eval { require namespace::autoclean ; 1 }
-        or plan skip_all => 'test requires namespace::autoclean';
-}
+use namespace::autoclean ();
 
 BEGIN {
     package Local::Role;

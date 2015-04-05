@@ -3,10 +3,7 @@ use warnings;
 use Test::More;
 use Test::Fatal;
 
-BEGIN {
-  plan skip_all => "Class::Method::Modifiers not installed or too old"
-    unless eval "use Class::Method::Modifiers 1.05; 1";
-}
+use Class::Method::Modifiers 1.05 ();
 
 BEGIN {
   package MyRole;

@@ -1,9 +1,8 @@
+use strict;
+use warnings;
 use Test::More;
-BEGIN {
-  plan skip_all => 'requires Moo'
-    unless eval { require Moo; require Moo::Role; 1 };
-  plan tests => 14;
-}
+use Moo ();
+use Moo::Role ();
 
 BEGIN {
   package Local::Role1;
@@ -59,3 +58,4 @@ for my $c (1 .. 3) {
   ok(   $class->DOES($role), "$class\->DOES($role)");
 }
 
+done_testing;
