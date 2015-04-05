@@ -7,7 +7,7 @@ use IPC::Open3;
 use File::Spec;
 use Config;
 
-$ENV{PERL5LIB} = join $Config{path_sep}, @ARGV;
+$ENV{PERL5LIB} = join $Config{path_sep}, @INC;
 
 open my $in, '<', File::Spec->devnull
   or die "can't open devnull: $!";
