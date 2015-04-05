@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 14;
+use Test::More;
 
 BEGIN {
   package Local::Role1;
@@ -55,3 +55,5 @@ for my $c (1 .. 3) {
   ok( ! $class->does($role), "$class\->does($role)");
   ok(   $class->DOES($role), "$class\->DOES($role)");
 }
+
+done_testing;
