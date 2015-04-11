@@ -1,5 +1,9 @@
 Revision history for Role-Tiny
 
+  - fix generating package names with single colons when abbreviating long
+    package names (RT#103310)
+  - don't run module interaction tests for user installs
+
 2.000000 - 2015-02-26
   * Incompatible Changes
     - Role::Tiny no longer applies fatal warnings to roles created with it.
