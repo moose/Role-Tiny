@@ -1,5 +1,6 @@
 Revision history for Role-Tiny
 
+2.000001 - 2015-04-24
   - fix generating invalid package names with single colons when abbreviating
     long package names (RT#103310)
   - don't run module interaction tests for user installs
