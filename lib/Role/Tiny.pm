@@ -116,9 +116,9 @@ sub _composite_name {
     '__WITH__', $superclass, my $compose_name = join '__AND__', @roles
   );
 
-  if (length($new_name) > 252) {
+  if (length($new_name) > 240) {
     $new_name = $COMPOSED{abbrev}{$new_name} ||= do {
-      my $abbrev = substr $new_name, 0, 250 - length $role_suffix;
+      my $abbrev = substr $new_name, 0, 238 - length $role_suffix;
       $abbrev =~ s/(?<!:):$//;
       $abbrev.'__'.$role_suffix++;
     };
