@@ -4,10 +4,8 @@ use Test::More;
 
 {
     package Web::ComposableRequest::Base;
-    use Types::Standard qw( ArrayRef );
     use Moo;
-    has '_args' => is => 'ro', isa => ArrayRef,
-        builder => sub { [] }, init_arg => 'args';
+    has 'foo' => is => 'ro';
     package Web::ComposableRequest::Role::L10N;
     use Moo::Role;
     package Web::ComposableRequest::Role::Session;
