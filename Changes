@@ -1,5 +1,8 @@
 Revision history for Role-Tiny
 
+  - fix generating invalid package names when composed name is greater than
+    240 characters (RT#106276)
+
 2.000001 - 2015-04-24
   - fix generating invalid package names with single colons when abbreviating
     long package names (RT#103310)
