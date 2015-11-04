@@ -470,7 +470,7 @@ Role::Tiny - Roles. Like a nouvelle cuisine portion size slice of Moose.
 
  1;
 
-else where
+elsewhere
 
  package Some::Class;
 
