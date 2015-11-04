@@ -1,8 +1,6 @@
 use strict;
 use warnings;
 use Test::More;
-use Test::Fatal;
-
 use Role::Tiny ();
 
 use lib 't/lib';

@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 use Test::More;
-use Test::Fatal;
 
 my $backcompat_called;
 {
