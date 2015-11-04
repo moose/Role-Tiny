@@ -466,7 +466,7 @@ Role::Tiny - Roles. Like a nouvelle cuisine portion size slice of Moose.
 
  sub bar { ... }
 
- around baz => sub { ... }
+ around baz => sub { ... };
 
  1;
 
