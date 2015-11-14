@@ -69,4 +69,14 @@ BEGIN {
   }
 }
 
+{
+  my $o = MyClass3->new;
+  Role::Tiny->apply_roles_to_package('MyClass3', 'MyRole');
+  local $TODO = 'magic not applied to existing objects on perl < 5.18'
+    if $] < 5.018;
+  is "$o", 'welp', 'subref overload applied to class with instance';
+  is sprintf('%d', $o), 219, 'method name overload applied to class with instance';
+  ok !$o, 'anon subref overload applied to class with instance';
+}
+
 done_testing;
