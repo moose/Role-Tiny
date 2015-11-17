@@ -15,15 +15,13 @@ use Test::More;
     sub method { 2 };
 }
 
-# Need to use stringy eval, so not Test::Fatal
-$@ = undef;
 ok(
-    !eval(q{
+    !eval {
         package Local::C1;
         use Role::Tiny::With;
         with qw(Local::R1 Local::R2);
         1;
-    }),
+    },
     'method conflict dies',
 );
 
@@ -33,15 +31,14 @@ like(
     '... with correct error message',
 );
 
-$@ = undef;
 ok(
-    eval(q{
+    eval {
         package Local::C2;
         use Role::Tiny::With;
         with qw(Local::R1 Local::R2);
         sub method { 3 };
         1;
-    }),
+    },
     '... but can be resolved',
 );
 

@@ -2,7 +2,6 @@ use strict;
 use warnings;
 use lib 't/role-basic/lib', 't/lib';
 use Test::More;
-use Test::Fatal;
 
 # multiple roles with the same role
 {
@@ -24,9 +23,12 @@ use Test::Fatal;
     use strict;
     use warnings;
     use Role::Tiny 'with';
-    ::is( ::exception {
+    eval {
         with 'RoleA', 'RoleB';
-    }, undef, 'Composing multiple roles which use the same role should not have conflicts' );
+        1;
+    } or $@ ||= 'unknown error';
+    ::is $@, '',
+      'Composing multiple roles which use the same role should not have conflicts';
     sub new { bless {} => shift }
 
     my $object = Foo->new;

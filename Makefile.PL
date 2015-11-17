@@ -6,8 +6,7 @@ my %META = (
   name => 'Role-Tiny',
   prereqs => {
     test => { requires => {
-      'Test::More' => '0.96',
-      'Test::Fatal' => '0.003',
+      'Test::More' => '0.88',
     } },
     runtime => {
       requires => {
