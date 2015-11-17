@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 use Test::More;
-use Test::Fatal;
 
 use Class::Method::Modifiers 1.05 ();
 
@@ -57,7 +56,10 @@ BEGIN {
 
 sub try_apply_to {
   my $to = shift;
-  exception { Role::Tiny->apply_role_to_package($to, 'MyRole') }
+  eval { Role::Tiny->apply_role_to_package($to, 'MyRole'); 1 }
+    and return undef;
+  return $@ if $@;
+  die "false exception caught!";
 }
 
 is(try_apply_to('MyClass'), undef, 'role applies cleanly');
@@ -67,8 +69,11 @@ is(ExtraClass->foo, 'role foo class foo', 'method modifier with composition');
 is(ExtraClass2->foo, 'role foo class foo',
   'method modifier with role composed into role');
 
-ok(exception {
-    my $new_class = Role::Tiny->create_class_with_roles('MyClass', 'BrokenRole');
-}, 'exception caught creating class with broken modifier in a role');
+eval {
+  Role::Tiny->create_class_with_roles('MyClass', 'BrokenRole');
+  1;
+} or $@ ||= 'false exception!';
+like $@, qr/Evaling failed:/,
+  'exception caught creating class with broken modifier in a role';
 
 done_testing;

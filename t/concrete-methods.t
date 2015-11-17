@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 use Test::More;
-use Test::Fatal;
 
 {
   package MyRole1;
@@ -35,7 +34,8 @@ my $class_methods = Role::Tiny->_concrete_methods_of('MyClass1');
 is_deeply([sort keys %$class_methods], ['method'],
   'only subs from non-Role::Tiny packages are methods' );
 
-like exception { Role::Tiny->methods_provided_by('MyClass1') },
+eval { Role::Tiny->methods_provided_by('MyClass1') };
+like $@,
   qr/is not a Role::Tiny/,
   'methods_provided_by refuses to work on classes';
 

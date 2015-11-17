@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 use Test::More;
-use Test::Fatal;
 
 BEGIN {
   package MyRole;
@@ -61,7 +60,10 @@ BEGIN {
 
 sub try_apply_to {
   my $to = shift;
-  exception { Role::Tiny->apply_role_to_package($to, 'MyRole') }
+  eval { Role::Tiny->apply_role_to_package($to, 'MyRole'); 1 }
+    and return undef;
+  return $@ if $@;
+  die "false exception caught!";
 }
 
 is(try_apply_to('MyClass'), undef, 'role applies cleanly');
@@ -74,10 +76,12 @@ ok(!MyClass->does('Random'), 'class does not do non-role');
 like(try_apply_to('NoMethods'), qr/req1, req2/, 'error for both methods');
 like(try_apply_to('OneMethod'), qr/req2/, 'error for one method');
 
-is exception {
+eval {
   Role::Tiny->apply_role_to_package('IntermediaryRole', 'MyRole');
   Role::Tiny->apply_role_to_package('ExtraClass', 'IntermediaryRole');
-}, undef, 'No errors applying roles';
+  1;
+} or $@ ||= "false exception!";
+is $@, '', 'No errors applying roles';
 
 ok(ExtraClass->does('MyRole'), 'ExtraClass does MyRole');
 ok(ExtraClass->does('IntermediaryRole'), 'ExtraClass does IntermediaryRole');
@@ -85,9 +89,10 @@ is(ExtraClass->bar, 'role bar', 'method from role');
 is(ExtraClass->baz, 'class baz', 'method from class');
 
 my $new_class;
-is exception {
+eval {
     $new_class = Role::Tiny->create_class_with_roles('MyClass', 'ExtraRole');
-}, undef, 'No errors creating class with roles';
+} or $@ ||= "false exception!";
+is $@, '', 'No errors creating class with roles';
 
 isa_ok($new_class, 'MyClass');
 is($new_class->extra1, 'role extra', 'method from role');
