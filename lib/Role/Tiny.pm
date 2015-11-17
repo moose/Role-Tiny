@@ -641,7 +641,10 @@ Returns true if the given package is a role.
 =over 4
 
 =item * On perl 5.8.8 and earlier, applying a role to an object won't apply any
-overloads from the role to all copies of the object.
+overloads from the role to other copies of the object.
+
+=item * On perl 5.16 and earlier, applying a role to a class won't apply any
+overloads from the role to any existing instances of the class.
 
 =back
 
