@@ -502,7 +502,7 @@ inheritance.  The basics of this implementation of roles is:
 =item *
 
 If a method is already defined on a class, that method will not be composed in
-from the role. A method inherited by a class gets overwriten by the role's
+from the role. A method inherited by a class gets overriden by the role's
 method of the same name, though.
 
 =item *
@@ -622,7 +622,7 @@ Composes role with package.  See also L<Role::Tiny::With>.
  Role::Tiny->apply_roles_to_object($foo, qw(Some::Role1 Some::Role2));
 
 Composes roles in order into object directly. Object is reblessed into the
-resulting class. Note that the object's methods get overwriten by the role's
+resulting class. Note that the object's methods get overriden by the role's
 ones with the same names.
 
 =head2 create_class_with_roles
