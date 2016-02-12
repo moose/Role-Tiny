@@ -134,8 +134,7 @@ sub create_class_with_roles {
   _load_module($superclass);
   {
     my %seen;
-    $seen{$_}++ for @roles;
-    if (my @dupes = grep $seen{$_} > 1, @roles) {
+    if (my @dupes = grep 1 == $seen{$_}++, @roles) {
       die "Duplicated roles: ".join(', ', @dupes);
     }
   }
