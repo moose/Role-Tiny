@@ -22,6 +22,13 @@ BEGIN {
   *_MRO_MODULE = "$]" < 5.010 ? sub(){"MRO/Compat.pm"} : sub(){"mro.pm"};
 }
 
+sub croak {
+  require Carp;
+  no warnings 'redefine';
+  *croak = \&Carp::croak;
+  goto &Carp::croak;
+}
+
 sub Role::Tiny::__GUARD__::DESTROY {
   delete $INC{$_[0]->[0]} if @{$_[0]};
 }
@@ -85,8 +92,8 @@ sub apply_single_role_to_package {
 
   _load_module($role);
 
-  die "This is apply_role_to_package" if ref($to);
-  die "${role} is not a Role::Tiny" unless $me->is_role($role);
+  croak "This is apply_role_to_package" if ref($to);
+  croak "${role} is not a Role::Tiny" unless $me->is_role($role);
 
   foreach my $step ($me->role_application_steps) {
     $me->$step($to, $role);
@@ -101,7 +108,7 @@ sub _copy_applied_list {
 
 sub apply_roles_to_object {
   my ($me, $object, @roles) = @_;
-  die "No roles supplied!" unless @roles;
+  croak "No roles supplied!" unless @roles;
   my $class = ref($object);
   # on perl < 5.8.9, magic isn't copied to all ref copies. bless the parameter
   # directly, so at least the variable passed to us will get any magic applied
@@ -129,13 +136,13 @@ sub _composite_name {
 sub create_class_with_roles {
   my ($me, $superclass, @roles) = @_;
 
-  die "No roles supplied!" unless @roles;
+  croak "No roles supplied!" unless @roles;
 
   _load_module($superclass);
   {
     my %seen;
     if (my @dupes = grep 1 == $seen{$_}++, @roles) {
-      die "Duplicated roles: ".join(', ', @dupes);
+      croak "Duplicated roles: ".join(', ', @dupes);
     }
   }
 
@@ -145,7 +152,7 @@ sub create_class_with_roles {
 
   foreach my $role (@roles) {
     _load_module($role);
-    die "${role} is not a Role::Tiny" unless $me->is_role($role);
+    croak "${role} is not a Role::Tiny" unless $me->is_role($role);
   }
 
   require(_MRO_MODULE);
@@ -160,7 +167,7 @@ sub create_class_with_roles {
           ."'".join(' and ', sort values %{$conflicts{$_}})."'"
           .", cannot apply these simultaneously to an object."
         } keys %conflicts;
-    die $fail;
+    croak $fail;
   }
 
   my @composable = map $me->_composable_package_for($_), reverse @roles;
@@ -211,7 +218,7 @@ sub apply_roles_to_package {
           ."'".join(' and ', sort values %{$conflicts{$_}})."'"
           .", the method '$_' must be implemented by '${to}'"
         } keys %conflicts;
-    die $fail;
+    croak $fail;
   }
 
   # conflicting methods are supposed to be treated as required by the
@@ -316,7 +323,7 @@ sub _check_requires {
     if (my $to_info = $INFO{$to}) {
       push @{$to_info->{requires}||=[]}, @requires_fail;
     } else {
-      die "Can't apply ${name} to ${to} - missing ".join(', ', @requires_fail);
+      croak "Can't apply ${name} to ${to} - missing ".join(', ', @requires_fail);
     }
   }
 }
@@ -340,7 +347,7 @@ sub _concrete_methods_of {
 
 sub methods_provided_by {
   my ($me, $role) = @_;
-  die "${role} is not a Role::Tiny" unless $me->is_role($role);
+  croak "${role} is not a Role::Tiny" unless $me->is_role($role);
   (keys %{$me->_concrete_methods_of($role)}, @{$INFO{$role}->{requires}||[]});
 }
 
