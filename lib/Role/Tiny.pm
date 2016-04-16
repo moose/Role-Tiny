@@ -393,10 +393,16 @@ sub _install_methods {
 sub _install_modifiers {
   my ($me, $to, $name) = @_;
   return unless my $modifiers = $INFO{$name}{modifiers};
-  if (my $info = $INFO{$to}) {
-    push @{$info->{modifiers}}, @{$modifiers||[]};
-  } else {
-    foreach my $modifier (@{$modifiers||[]}) {
+  my $info = $INFO{$to};
+  my $existing = ($info ? $info->{modifiers} : $COMPOSED{modifiers}{$to}) ||= [];
+  my @modifiers = grep {
+    my $modifier = $_;
+    !grep $_ == $modifier, @$existing;
+  } @{$modifiers||[]};
+  push @$existing, @modifiers;
+
+  if (!$info) {
+    foreach my $modifier (@modifiers) {
       $me->_install_single_modifier($to, @$modifier);
     }
   }
