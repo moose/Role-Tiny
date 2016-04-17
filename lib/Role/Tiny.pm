@@ -59,7 +59,6 @@ sub import {
   # install before/after/around subs
   foreach my $type (qw(before after around)) {
     *{_getglob "${target}::${type}"} = sub {
-      require Class::Method::Modifiers;
       push @{$INFO{$target}{modifiers}||=[]}, [ $type => @_ ];
       return;
     };
@@ -414,9 +413,11 @@ sub _install_single_modifier {
   my ($me, @args) = @_;
   defined($vcheck_error) or $vcheck_error = do {
     local $@;
-    eval { Class::Method::Modifiers->VERSION(1.05); 1 }
-      ? 0
-      : $@
+    eval {
+      require Class::Method::Modifiers;
+      Class::Method::Modifiers->VERSION(1.05);
+      1;
+    } ? 0 : $@;
   };
   $vcheck_error and die $vcheck_error;
   Class::Method::Modifiers::install_modifier(@args);
