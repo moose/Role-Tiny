@@ -1,5 +1,10 @@
 Revision history for Role-Tiny
 
+  - delay loading Class::Method::Modifiers until applying modifiers to a package
+  - use croak rather than die for reporting errors
+  - apply method modifiers only once, even if they are applied via multiple
+    composition paths (RT#106668)
+
 2.000001 - 2015-04-24
   - fix generating invalid package names with single colons when abbreviating
     long package names (RT#103310)
