@@ -1,5 +1,6 @@
 Revision history for Role-Tiny
 
+  - restore compatibility with Moo versions pre 1.004_003
   - delay loading Class::Method::Modifiers until applying modifiers to a package
   - use croak rather than die for reporting errors
   - apply method modifiers only once, even if they are applied via multiple
