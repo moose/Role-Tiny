@@ -65,7 +65,9 @@ sub import {
   @{$INFO{$target}{not_methods}={}}{@not_methods} = @not_methods;
   # a role does itself
   $APPLIED_TO{$target} = { $target => undef };
-  $_->($target) for @ON_ROLE_CREATE;
+  foreach my $hook (@ON_ROLE_CREATE) {
+    $hook->($target);
+  }
 }
 
 sub _install_subs {
