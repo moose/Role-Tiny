@@ -52,10 +52,24 @@ sub import {
   my $me = shift;
   strict->import;
   warnings->import;
+  $me->_install_subs($target);
   return if $me->is_role($target); # already exported into this package
   $INFO{$target}{is_role} = 1;
   # get symbol table reference
   my $stash = _getstash($target);
+  # grab all *non-constant* (stash slot is not a scalarref) subs present
+  # in the symbol table and store their refaddrs (no need to forcibly
+  # inflate constant subs into real subs) with a map to the coderefs in
+  # case of copying or re-use
+  my @not_methods = (map { *$_{CODE}||() } grep !ref($_), values %$stash);
+  @{$INFO{$target}{not_methods}={}}{@not_methods} = @not_methods;
+  # a role does itself
+  $APPLIED_TO{$target} = { $target => undef };
+  $_->($target) for @ON_ROLE_CREATE;
+}
+
+sub _install_subs {
+  my ($me, $target) = @_;
   # install before/after/around subs
   foreach my $type (qw(before after around)) {
     *{_getglob "${target}::${type}"} = sub {
@@ -71,15 +85,6 @@ sub import {
     $me->apply_roles_to_package($target, @_);
     return;
   };
-  # grab all *non-constant* (stash slot is not a scalarref) subs present
-  # in the symbol table and store their refaddrs (no need to forcibly
-  # inflate constant subs into real subs) with a map to the coderefs in
-  # case of copying or re-use
-  my @not_methods = (map { *$_{CODE}||() } grep !ref($_), values %$stash);
-  @{$INFO{$target}{not_methods}={}}{@not_methods} = @not_methods;
-  # a role does itself
-  $APPLIED_TO{$target} = { $target => undef };
-  $_->($target) for @ON_ROLE_CREATE;
 }
 
 sub role_application_steps {
