@@ -1,8 +1,9 @@
 use strict;
 use warnings;
-use Test::More $ENV{EXTENDED_TESTING} ? ()
-  : (skip_all => 'Set EXTENDED_TESTING to enable Moo testing');
-
+use Test::More
+  !($ENV{EXTENDED_TESTING} || grep $_ eq '--doit', @ARGV)
+    ? (skip_all => 'Set EXTENDED_TESTING to enable dependents testing')
+    : ();
 use IPC::Open3;
 use File::Spec;
 use Cwd qw(abs_path);
