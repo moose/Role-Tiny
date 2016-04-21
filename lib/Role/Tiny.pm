@@ -72,6 +72,7 @@ sub import {
 
 sub _install_subs {
   my ($me, $target) = @_;
+  return if $me->is_role($target);
   # install before/after/around subs
   foreach my $type (qw(before after around)) {
     *{_getglob "${target}::${type}"} = sub {

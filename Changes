@@ -1,5 +1,8 @@
 Revision history for Role-Tiny
 
+  - don't install subs if importing into a package that is already a role.  This
+    can happen if the module previously imported Moo::Role.
+
 2.000002 - 2016-04-19
   - restore compatibility with Moo versions pre 1.004_003
   - delay loading Class::Method::Modifiers until applying modifiers to a package
