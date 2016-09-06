@@ -29,4 +29,27 @@ is(MyClass->foo, 'class foo', 'method from class no override');
 is(MyClass->bar, 'role bar',  'method from role');
 is(MyClass->baz, 'class baz', 'method from class');
 
+BEGIN {
+  package RoleWithStub;
+
+  use Role::Tiny;
+
+  sub foo { 'role foo' }
+
+  sub bar ($$);
+}
+
+{
+  package ClassConsumeStub;
+  use Role::Tiny::With;
+
+  eval {
+    with 'RoleWithStub';
+  };
+}
+
+is $@, '', 'stub composed without error';
+ok exists &ClassConsumeStub::bar && !defined &ClassConsumeStub::bar,
+  'stub exists in consuming class';
+
 done_testing;
