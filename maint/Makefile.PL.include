@@ -7,6 +7,4 @@ ExtUtils::MakeMaker->VERSION(6.68)
 
 author 'mst - Matt S. Trout (cpan:MSTROUT) <mst@shadowcat.co.uk>';
 
-manifest_include 't/role-basic' => qr/.*\.pm$/;
-
 1;

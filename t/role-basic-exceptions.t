@@ -1,6 +1,5 @@
 use strict;
 use warnings;
-use lib 't/role-basic/lib';
 use Test::More;
 require Role::Tiny;
 

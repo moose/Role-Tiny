@@ -1,6 +1,5 @@
 use strict;
 use warnings;
-use lib 't/role-basic/lib';
 use Test::More;
 require Role::Tiny;
 
@@ -79,11 +78,29 @@ ok $object->Role::Tiny::does_role('My::Does::Basic2'),
 ok !$object->Role::Tiny::does_role('My::Does::Basic1'),
   '... but not roles which it never consumed';
 
+
+{
+    package GenAccessors;
+    BEGIN { $INC{'GenAccessors.pm'} = __FILE__ }
+
+    sub import {
+        my ( $class, @methods ) = @_;
+        my $target = caller;
+
+        foreach my $method (@methods) {
+            no strict 'refs';
+            *{"${target}::${method}"} = sub {
+                @_ > 1 ? $_[0]->{$method} = $_[1] : $_[0]->{$method};
+            };
+        }
+    }
+}
+
 {
     {
         package Role::Which::Imports;
-        use Role::Tiny allow => 'TestMethods';
-        use TestMethods qw(this that);
+        use Role::Tiny;
+        use GenAccessors qw(this that);
     }
     {
        package Class::With::ImportingRole;

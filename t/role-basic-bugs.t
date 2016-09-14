@@ -1,6 +1,5 @@
 use strict;
 use warnings;
-use lib 't/role-basic/lib', 't/lib';
 use Test::More;
 
 # multiple roles with the same role
@@ -81,5 +80,22 @@ use Test::More;
     ::ok(Role::Tiny::does_role($object, 'Role2'), 'Role2 consumed');
 }
 
+BEGIN {
+    package Bar;
+    $INC{'Bar.pm'} = __FILE__;
+
+    sub new { bless {} => shift }
+    sub bar { 1 }
+}
+BEGIN {
+    package Baz;
+    $INC{'Baz.pm'} = __FILE__;
+
+    use Role::Tiny;
+
+    sub baz { 1 }
+}
+
 can_ok(Role::Tiny->create_class_with_roles(qw(Bar Baz))->new, qw(bar baz));
+
 done_testing;
