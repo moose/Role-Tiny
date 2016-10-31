@@ -1,5 +1,9 @@
 Revision history for Role-Tiny
 
+  - Fix consuming stubs from roles (RT#116674).
+  - Fix error message when applying conflicting roles to an object.
+  - Drop prerequisite on MRO::Compat on perl 5.8.
+
 2.000003 - 2016-04-21
   - don't install subs if importing into a package that is already a role.  This
     can happen if the module previously imported Moo::Role.
