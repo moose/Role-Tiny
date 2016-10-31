@@ -1,5 +1,6 @@
 Revision history for Role-Tiny
 
+2.000004 - 2016-10-31
   - Fix consuming stubs from roles (RT#116674).
   - Fix error message when applying conflicting roles to an object.
   - Drop prerequisite on MRO::Compat on perl 5.8.
