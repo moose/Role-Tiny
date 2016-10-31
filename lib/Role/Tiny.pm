@@ -19,7 +19,6 @@ our @ON_ROLE_CREATE;
 
 BEGIN {
   *_WORK_AROUND_BROKEN_MODULE_STATE = "$]" < 5.009 ? sub(){1} : sub(){0};
-  *_MRO_MODULE = "$]" < 5.010 ? sub(){"MRO/Compat.pm"} : sub(){"mro.pm"};
 }
 
 sub croak {
@@ -161,8 +160,6 @@ sub create_class_with_roles {
     _load_module($role);
     croak "${role} is not a Role::Tiny" unless $me->is_role($role);
   }
-
-  require(_MRO_MODULE);
 
   my $composite_info = $me->_composite_info_for(@roles);
   my %conflicts = %{$composite_info->{conflicts}};
@@ -457,8 +454,7 @@ sub _install_does {
 
 sub does_role {
   my ($proto, $role) = @_;
-  require(_MRO_MODULE);
-  foreach my $class (@{mro::get_linear_isa(ref($proto)||$proto)}) {
+  foreach my $class (@{_get_isa(ref($proto)||$proto)}) {
     return 1 if exists $APPLIED_TO{$class}{$role};
   }
   return 0;
@@ -467,6 +463,30 @@ sub does_role {
 sub is_role {
   my ($me, $role) = @_;
   return !!($INFO{$role} && ($INFO{$role}{is_role} || $INFO{$role}{not_methods}));
+}
+
+sub _get_isa ($;$) {
+  no warnings 'redefine';
+  if ("$]" >= 5.010) {
+    require mro;
+    *__get_isa = \&mro::get_linear_isa;
+  }
+  else {
+    *__get_isa = \&__get_linear_isa_dfs;
+  }
+  goto &__get_isa;
+}
+
+sub _get_linear_isa_dfs ($;$) {
+  my @isa = shift;
+  my @lin;
+  my %seen;
+  while (my $class = pop @isa) {
+    push @lin, $class;
+    no strict 'refs';
+    push @isa, grep !$seen{$_}++, reverse @{$class.'::ISA'};
+  }
+  return \@lin;
 }
 
 1;

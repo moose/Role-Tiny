@@ -39,13 +39,11 @@ my %META = (
   no_index => {
     directory => [ 't', 'xt' ]
   },
+  dynamic_config => 0,
+  x_static_install => 1,
 );
 
-my %MM_ARGS = (
-  PREREQ_PM => {
-    ($] >= 5.010 ? () : ('MRO::Compat' => 0)),
-  },
-);
+my %MM_ARGS = ();
 
 ## BOILERPLATE ###############################################################
 require ExtUtils::MakeMaker;
