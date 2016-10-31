@@ -171,7 +171,7 @@ sub create_class_with_roles {
       join "\n",
         map {
           "Method name conflict for '$_' between roles "
-          ."'".join(' and ', sort values %{$conflicts{$_}})."'"
+          ."'".join("' and '", sort values %{$conflicts{$_}})."'"
           .", cannot apply these simultaneously to an object."
         } keys %conflicts;
     croak $fail;
