@@ -1,5 +1,6 @@
 Revision history for Role-Tiny
 
+2.000005 - 2016-11-01
   - revert change to MRO::Compat usage
 
 2.000004 - 2016-10-31
