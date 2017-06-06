@@ -19,6 +19,9 @@ our @ON_ROLE_CREATE;
 
 BEGIN {
   *_WORK_AROUND_BROKEN_MODULE_STATE = "$]" < 5.009 ? sub(){1} : sub(){0};
+  *_WORK_AROUND_HINT_LEAKAGE
+    = "$]" < 5.011 && !("$]" >= 5.009004 && "$]" < 5.010001)
+      ? sub(){1} : sub(){0};
   *_MRO_MODULE = "$]" < 5.010 ? sub(){"MRO/Compat.pm"} : sub(){"mro.pm"};
 }
 
@@ -34,15 +37,19 @@ sub Role::Tiny::__GUARD__::DESTROY {
 }
 
 sub _load_module {
-  (my $proto = $_[0]) =~ s/::/\//g;
-  $proto .= '.pm';
-  return 1 if $INC{$proto};
+  my ($module) = @_;
+  (my $file = "$module.pm") =~ s{::}{/}g;
+  return 1
+    if $INC{$file};
+
   # can't just ->can('can') because a sub-package Foo::Bar::Baz
   # creates a 'Baz::' key in Foo::Bar's symbol table
-  return 1 if grep !/::$/, keys %{_getstash($_[0])||{}};
+  return 1
+    if grep !/::\z/, keys %{_getstash($module)};
   my $guard = _WORK_AROUND_BROKEN_MODULE_STATE
-    && bless([ $proto ], 'Role::Tiny::__GUARD__');
-  require $proto;
+    && bless([ $file ], 'Role::Tiny::__GUARD__');
+  local %^H if _WORK_AROUND_HINT_LEAKAGE;
+  require $file;
   pop @$guard if _WORK_AROUND_BROKEN_MODULE_STATE;
   return 1;
 }
