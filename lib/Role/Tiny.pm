@@ -68,7 +68,7 @@ sub import {
   # in the symbol table and store their refaddrs (no need to forcibly
   # inflate constant subs into real subs) with a map to the coderefs in
   # case of copying or re-use
-  my @not_methods = (map { *$_{CODE}||() } grep !ref($_), values %$stash);
+  my @not_methods = map +(ref $_ eq 'CODE' ? $_ : ref $_ ? () : *$_{CODE}||()), values %$stash;
   @{$INFO{$target}{not_methods}={}}{@not_methods} = @not_methods;
   # a role does itself
   $APPLIED_TO{$target} = { $target => undef };
@@ -356,7 +356,7 @@ sub _concrete_methods_of {
       no strict 'refs';
       my $code = exists &{"${role}::$_"} ? \&{"${role}::$_"} : undef;
       ( ! $code or exists $not_methods->{$code} ) ? () : ($_ => $code)
-    } grep !ref($stash->{$_}), keys %$stash
+    } grep +(!ref($stash->{$_}) || ref($stash->{$_}) eq 'CODE'), keys %$stash
   };
 }
 
