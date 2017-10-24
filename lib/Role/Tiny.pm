@@ -7,7 +7,7 @@ use strict;
 use warnings;
 
 our $VERSION = '2.000005';
-$VERSION = eval $VERSION;
+$VERSION =~ tr/_//d;
 
 our %INFO;
 our %APPLIED_TO;
