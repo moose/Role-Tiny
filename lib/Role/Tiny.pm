@@ -60,6 +60,11 @@ sub import {
   strict->import;
   warnings->import;
   $me->_install_subs($target);
+  $me->make_role($target);
+}
+
+sub make_role {
+  my ($me, $target) = @_;
   return if $me->is_role($target); # already exported into this package
   $INFO{$target}{is_role} = 1;
   # get symbol table reference
@@ -666,6 +671,13 @@ New class is returned.
  Role::Tiny->is_role('Some::Role1')
 
 Returns true if the given package is a role.
+
+=head2 make_role
+
+  Role::Tiny->make_role('Some::Package');
+
+Promotes a given package to a role.
+No subroutines are imported into C<'Some::Package'>.
 
 =head1 CAVEATS
 
