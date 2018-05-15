@@ -9,6 +9,10 @@ use File::Spec;
 use Cwd qw(abs_path);
 use Config;
 
+delete $ENV{AUTHOR_TESTING};
+delete $ENV{EXTENDED_TESTING};
+delete $ENV{RELEASE_TESTING};
+
 my @extra_libs = do {
   my @libs = `"$^X" -le"print for \@INC"`;
   chomp @libs;
