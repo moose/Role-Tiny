@@ -16,7 +16,7 @@ perl:
 matrix:
   include:
     - perl: 5.26
-      env: COVERAGE=1
+      env: COVERAGE=codecov
     - perl: 5.18
       env: EXTENDED_TESTING=1
   allow_failures:
