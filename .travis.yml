@@ -15,6 +15,8 @@ perl:
   - "dev"
 matrix:
   include:
+    - perl: 5.8
+      env: COVERAGE=codecov
     - perl: 5.26
       env: COVERAGE=codecov
     - perl: 5.18
