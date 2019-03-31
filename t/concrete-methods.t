@@ -18,6 +18,7 @@ use Test::More;
 
   our $GLOBAL1 = 1;
   sub after_role {}
+  use constant after_constant => 1;
 }
 
 {

@@ -54,6 +54,22 @@ sub _load_module {
   return 1;
 }
 
+sub _is_const {
+  my $sub = shift;
+  my $proto = prototype $sub;
+  if (defined &$sub && defined $proto && $proto eq '') {
+    local *_test_const = $sub;
+    local $@;
+    local $SIG{__DIE__};
+    return !eval {
+      use warnings FATAL => 'all';
+      undef &_test_const;
+      1;
+    };
+  }
+  return !!0;
+}
+
 sub import {
   my $target = caller;
   my $me = shift;
@@ -355,8 +371,10 @@ sub _concrete_methods_of {
     map {;
       no strict 'refs';
       my $code = exists &{"${role}::$_"} ? \&{"${role}::$_"} : undef;
-      ( ! $code or exists $not_methods->{$code} ) ? () : ($_ => $code)
-    } grep +(!ref($stash->{$_}) || ref($stash->{$_}) eq 'CODE'), keys %$stash
+      ( ! $code or exists $not_methods->{$code} or _is_const($code) ) ? () : ($_ => $code)
+    }
+    grep +(!ref($stash->{$_}) || ref($stash->{$_}) eq 'CODE'),
+    keys %$stash
   };
 }
 
