@@ -64,7 +64,6 @@ sub _is_const {
     return !eval {
       use warnings FATAL => 'all';
       undef &_test_const;
-      warn "it's const";
       1;
     };
   }
