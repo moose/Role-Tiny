@@ -64,6 +64,7 @@ sub _is_const {
     return !eval {
       use warnings FATAL => 'all';
       undef &_test_const;
+      warn "it's const";
       1;
     };
   }
@@ -371,7 +372,7 @@ sub _concrete_methods_of {
     map {;
       no strict 'refs';
       my $code = exists &{"${role}::$_"} ? \&{"${role}::$_"} : undef;
-      ( ! $code or exists $not_methods->{$code} or _is_const($code) ) ? () : ($_ => $code)
+      ( ! $code or exists $not_methods->{$code} or (!/\A\(/ && _is_const($code)) ) ? () : ($_ => $code)
     }
     grep +(!ref($stash->{$_}) || ref($stash->{$_}) eq 'CODE'),
     keys %$stash
