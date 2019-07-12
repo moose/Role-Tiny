@@ -397,7 +397,7 @@ sub _install_methods {
   # determine already extant methods of target
   my %has_methods;
   @has_methods{grep
-    +(ref($stash->{$_}) || *{$stash->{$_}}{CODE}),
+    +(ref($stash->{$_}) || exists &{"${to}::$_"}),
     keys %$stash
   } = ();
 
