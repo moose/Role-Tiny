@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 our $VERSION = '2.000006';
-$VERSION = eval $VERSION;
+$VERSION =~ tr/_//d;
 
 use Role::Tiny ();
 
