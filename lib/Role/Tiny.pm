@@ -1,8 +1,4 @@
 package Role::Tiny;
-
-sub _getglob { \*{$_[0]} }
-sub _getstash { \%{"$_[0]::"} }
-
 use strict;
 use warnings;
 
@@ -24,6 +20,9 @@ BEGIN {
       ? sub(){1} : sub(){0};
   *_MRO_MODULE = "$]" < 5.010 ? sub(){"MRO/Compat.pm"} : sub(){"mro.pm"};
 }
+
+sub _getglob { no strict 'refs'; \*{$_[0]} }
+sub _getstash { no strict 'refs'; \%{"$_[0]::"} }
 
 sub croak {
   require Carp;
