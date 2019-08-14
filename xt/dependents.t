@@ -12,6 +12,8 @@ use Config;
 delete $ENV{AUTHOR_TESTING};
 delete $ENV{EXTENDED_TESTING};
 delete $ENV{RELEASE_TESTING};
+$ENV{NONINTERACTIVE_TESTING} = 1;
+$ENV{PERL_MM_USE_DEFAULT} = 1;
 
 # tests in Moo-0.009002 are sensitive to hash key order.  force one that
 # works, since we still want to run the rest of the tests.
