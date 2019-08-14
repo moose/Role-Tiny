@@ -42,6 +42,8 @@ for my $dist (
   'HAARG/Moo-2.000000.tar.gz',
   'HAARG/Moo-2.001000.tar.gz',
   'Moo',
+  'namespace::autoclean',
+  'Dancer2',
 ) {
   note "Testing $dist ...";
 
