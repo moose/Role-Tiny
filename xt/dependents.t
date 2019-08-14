@@ -9,6 +9,8 @@ use File::Spec;
 use Cwd qw(abs_path);
 use Config;
 
+my $v = grep /\A(?:-v|--verbose)\z/, @ARGV;
+
 delete $ENV{AUTHOR_TESTING};
 delete $ENV{EXTENDED_TESTING};
 delete $ENV{RELEASE_TESTING};
@@ -41,11 +43,18 @@ for my $dist (
   'HAARG/Moo-2.001000.tar.gz',
   'Moo',
 ) {
+  note "Testing $dist ...";
+
   my $name = $dist;
   $name =~ s{$ext$}{}
     if $name =~ m{/};
   my $pid = open3 $in, my $out, undef, $^X, '-MCPAN', '-e', 'test @ARGV', $dist;
-  my $output = do { local $/; <$out> };
+  my $output = '';
+  while (my $line = <$out>) {
+    $output .= $line;
+    diag $line
+      if $v;
+  }
   close $out;
   waitpid $pid, 0;
 
@@ -56,8 +65,9 @@ for my $dist (
       and $name = "$3 (latest)";
   }
 
-  like $output, qr/--\s*OK\s*\z/,
-    "$name passed tests";
+  ok $output =~ /--\s*OK\s*\z/ && $output !~ /--\s*NOT\s+OK\s*\z/,
+    "$name passed tests"
+    or (!$v and diag $output);
 }
 
 done_testing;
