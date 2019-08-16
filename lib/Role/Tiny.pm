@@ -53,6 +53,20 @@ sub _load_module {
   return 1;
 }
 
+# returns a hashref of subs.  keys are names, values are coderefs, scalar refs
+# for inflated constants, and undef or strings for stubs.  very similar to what
+# is # stored in the stash, but omitting GLOBs and uninflating constants and
+# stubs.
+sub _all_subs {
+  my ($package) = @_;
+  my $stash = _getstash($package);
+  return {
+    map +(exists &{"${package}::${_}"} ? ($_ => \&{"${package}::${_}"}) : ()),
+    grep !/::\z/,
+    keys %$stash
+  };
+}
+
 sub import {
   my $target = caller;
   my $me = shift;
@@ -61,14 +75,11 @@ sub import {
   $me->_install_subs($target);
   return if $me->is_role($target); # already exported into this package
   $INFO{$target}{is_role} = 1;
-  # get symbol table reference
-  my $stash = _getstash($target);
-  # grab all *non-constant* (stash slot is not a scalarref) subs present
-  # in the symbol table and store their refaddrs (no need to forcibly
-  # inflate constant subs into real subs) with a map to the coderefs in
-  # case of copying or re-use
-  my @not_methods = map +(ref $_ eq 'CODE' ? $_ : ref $_ ? () : *$_{CODE}||()), values %$stash;
-  @{$INFO{$target}{not_methods}={}}{@not_methods} = @not_methods;
+
+  my $nonmethods = _all_subs($target);
+  delete @{$nonmethods}{grep /\A\(/, keys %$nonmethods};
+  $INFO{$target}{nonmethods} = $nonmethods;
+
   # a role does itself
   $APPLIED_TO{$target} = { $target => undef };
   foreach my $hook (@ON_ROLE_CREATE) {
@@ -344,25 +355,41 @@ sub _check_requires {
 sub _concrete_methods_of {
   my ($me, $role) = @_;
   my $info = $INFO{$role};
-  # grab role symbol table
-  my $stash = _getstash($role);
-  # reverse so our keys become the values (captured coderefs) in case
-  # they got copied or re-used since
-  my $not_methods = { reverse %{$info->{not_methods}||{}} };
-  $info->{methods} ||= +{
-    # grab all code entries that aren't in the not_methods list
-    map {;
-      no strict 'refs';
-      my $code = exists &{"${role}::$_"} ? \&{"${role}::$_"} : undef;
-      ( ! $code or exists $not_methods->{$code} ) ? () : ($_ => $code)
-    } grep +(!ref($stash->{$_}) || ref($stash->{$_}) eq 'CODE'), keys %$stash
-  };
+
+  return $info->{methods}
+    if $info && $info->{methods};
+
+  my $nonmethods = ($info && $info->{nonmethods}) || {};
+
+  # this is only for backwards compatibility with older Moo, which
+  # reimplements method tracking rather than calling our method
+  my $not_methods = ($info && $info->{not_methods}) || {};
+
+  my $subs = _all_subs($role);
+  for my $sub (keys %$subs) {
+    my $code = $subs->{$sub};
+    if (
+      length ref $code && exists $not_methods->{$code}
+      or (
+        $sub !~ /\A\(/
+        and exists $nonmethods->{$sub}
+        and $code == $nonmethods->{$sub}
+      )
+    ) {
+      delete $subs->{$sub};
+    }
+  }
+
+  if ($info) {
+    $info->{methods} = $subs;
+  }
+  return $subs;
 }
 
 sub methods_provided_by {
   my ($me, $role) = @_;
   croak "${role} is not a Role::Tiny" unless $me->is_role($role);
-  (keys %{$me->_concrete_methods_of($role)}, @{$INFO{$role}->{requires}||[]});
+  sort (keys %{$me->_concrete_methods_of($role)}, @{$INFO{$role}->{requires}||[]});
 }
 
 sub _install_methods {
@@ -375,15 +402,15 @@ sub _install_methods {
   # grab target symbol table
   my $stash = _getstash($to);
 
-  # determine already extant methods of target
-  my %has_methods;
-  @has_methods{grep
-    +(ref($stash->{$_}) || *{$stash->{$_}}{CODE}),
-    keys %$stash
-  } = ();
+  foreach my $i (keys %$methods) {
+    my $target = $stash->{$i};
 
-  foreach my $i (grep !exists $has_methods{$_}, keys %$methods) {
     no warnings 'once';
+    no strict 'refs';
+
+    next
+      if exists &{"${to}::${i}"};
+
     my $glob = _getglob "${to}::${i}";
     *$glob = $methods->{$i};
 
@@ -394,7 +421,7 @@ sub _install_methods {
         && ((defined &overload::nil && $methods->{$i} == \&overload::nil)
             || (defined &overload::_nil && $methods->{$i} == \&overload::_nil));
 
-    my $overload = ${ *{_getglob "${role}::${i}"}{SCALAR} };
+    my $overload = ${ _getglob "${role}::${i}" };
     next
       unless defined $overload;
 
@@ -472,7 +499,7 @@ sub does_role {
 
 sub is_role {
   my ($me, $role) = @_;
-  return !!($INFO{$role} && ($INFO{$role}{is_role} || $INFO{$role}{not_methods}));
+  return !!($INFO{$role} && ($INFO{$role}{is_role} || $INFO{$role}{not_methods} || $INFO{$role}{nonmethods}));
 }
 
 1;
