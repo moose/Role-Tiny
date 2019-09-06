@@ -9,7 +9,9 @@ use File::Spec;
 use Cwd qw(abs_path);
 use Config;
 
-my $v = grep /\A(?:-v|--verbose)\z/, @ARGV;
+# this won't run by default anyway, so just display the full content so Travis
+# doesn't abort due to lack of output.
+my $v = 1; # grep /\A(?:-v|--verbose)\z/, @ARGV;
 
 delete $ENV{AUTHOR_TESTING};
 delete $ENV{EXTENDED_TESTING};
