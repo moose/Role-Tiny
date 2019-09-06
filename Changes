@@ -1,5 +1,6 @@
 Revision history for Role-Tiny
 
+2.000_009 - 2019-09-06
   - fix composing roles into packages that have stub subs in them
   - treat constants consistently with all other subs, no matter where they are
     defined
