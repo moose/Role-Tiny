@@ -18,11 +18,11 @@ BEGIN {
   use constant before_constant_list_inflate => (4, 5);
 
   # subs stored directly in the stash are meant to be supported in perl 5.22+,
-  # but until 5.26 they have a risk of segfaulting.  perl itself won't ever
+  # but until 5.26.1 they have a risk of segfaulting.  perl itself won't ever
   # install subs in exactly this form, so we're safe to just dodge the issue
   # in the test and not account for it in Role::Tiny itself.
   BEGIN {
-    if ("$]" >= 5.026) {
+    if ("$]" >= 5.026001) {
       $MyRole1::{'blorf'} = sub { 'blorf' };
     }
   }
