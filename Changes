@@ -1,5 +1,11 @@
 Revision history for Role-Tiny
 
+  - refactored method tracking to allow easier extending (such as by Moo)
+  - added make_role method to make a package into a role, but without
+    exporting any subs into it
+  - refactored sub exporting to allow extensions to do different things with
+    the subs
+
 2.000_009 - 2019-09-06
   - fix composing roles into packages that have stub subs in them
   - treat constants consistently with all other subs, no matter where they are
