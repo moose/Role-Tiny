@@ -53,15 +53,12 @@ sub _load_module {
   return 1;
 }
 
-# returns a hashref of subs.  keys are names, values are coderefs, scalar refs
-# for inflated constants, and undef or strings for stubs.  very similar to what
-# is # stored in the stash, but omitting GLOBs and uninflating constants and
-# stubs.
 sub _all_subs {
-  my ($package) = @_;
+  my ($me, $package) = @_;
   my $stash = _getstash($package);
   return {
-    map +(exists &{"${package}::${_}"} ? ($_ => \&{"${package}::${_}"}) : ()),
+    map +($_ => \&{"${package}::${_}"}),
+    grep exists &{"${package}::${_}"},
     grep !/::\z/,
     keys %$stash
   };
@@ -76,9 +73,9 @@ sub import {
   return if $me->is_role($target); # already exported into this package
   $INFO{$target}{is_role} = 1;
 
-  my $nonmethods = _all_subs($target);
-  delete @{$nonmethods}{grep /\A\(/, keys %$nonmethods};
-  $INFO{$target}{nonmethods} = $nonmethods;
+  my $non_methods = $me->_all_subs($target);
+  delete @{$non_methods}{grep /\A\(/, keys %$non_methods};
+  $INFO{$target}{non_methods} = $non_methods;
 
   # a role does itself
   $APPLIED_TO{$target} = { $target => undef };
@@ -352,6 +349,28 @@ sub _check_requires {
   }
 }
 
+sub _non_methods {
+  my ($me, $role) = @_;
+  my $info = $INFO{$role} or return {};
+
+  my %non_methods = %{ $info->{non_methods} || {} };
+
+  # this is only for backwards compatibility with older Moo, which
+  # reimplements method tracking rather than calling our method
+  my %not_methods = reverse %{ $info->{not_methods} || {} };
+  return \%non_methods unless keys %not_methods;
+
+  my $subs = $me->_all_subs($role);
+  for my $sub (grep !/\A\(/, keys %$subs) {
+    my $code = $subs->{$sub};
+    if (exists $not_methods{$code}) {
+      $non_methods{$sub} = $code;
+    }
+  }
+
+  return \%non_methods;
+}
+
 sub _concrete_methods_of {
   my ($me, $role) = @_;
   my $info = $INFO{$role};
@@ -359,23 +378,11 @@ sub _concrete_methods_of {
   return $info->{methods}
     if $info && $info->{methods};
 
-  my $nonmethods = ($info && $info->{nonmethods}) || {};
+  my $non_methods = $me->_non_methods($role);
 
-  # this is only for backwards compatibility with older Moo, which
-  # reimplements method tracking rather than calling our method
-  my $not_methods = ($info && $info->{not_methods}) || {};
-
-  my $subs = _all_subs($role);
+  my $subs = $me->_all_subs($role);
   for my $sub (keys %$subs) {
-    my $code = $subs->{$sub};
-    if (
-      length ref $code && exists $not_methods->{$code}
-      or (
-        $sub !~ /\A\(/
-        and exists $nonmethods->{$sub}
-        and $code == $nonmethods->{$sub}
-      )
-    ) {
+    if ( exists $non_methods->{$sub} && $non_methods->{$sub} == $subs->{$sub} ) {
       delete $subs->{$sub};
     }
   }
@@ -499,7 +506,7 @@ sub does_role {
 
 sub is_role {
   my ($me, $role) = @_;
-  return !!($INFO{$role} && ($INFO{$role}{is_role} || $INFO{$role}{not_methods} || $INFO{$role}{nonmethods}));
+  return !!($INFO{$role} && ($INFO{$role}{is_role} || $INFO{$role}{not_methods} || $INFO{$role}{non_methods}));
 }
 
 1;
