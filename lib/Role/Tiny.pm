@@ -687,6 +687,12 @@ hierarchy provides C<DOES>, then Role::Tiny will not override it.
 
 =head1 METHODS
 
+=head2 make_role
+
+ Role::Tiny->make_role('Some::Role');
+
+Makes a package into a role, but does not export any subs into it.
+
 =head2 apply_roles_to_package
 
  Role::Tiny->apply_roles_to_package(
