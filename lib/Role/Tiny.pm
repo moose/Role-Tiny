@@ -93,22 +93,31 @@ sub make_role {
 
 sub _install_subs {
   my ($me, $target) = @_;
-  return if $me->is_role($target);
-  # install before/after/around subs
-  foreach my $type (qw(before after around)) {
-    *{_getglob "${target}::${type}"} = sub {
-      push @{$INFO{$target}{modifiers}||=[]}, [ $type => @_ ];
+  my %install = $me->_gen_subs($target);
+  *{_getglob("${target}::${_}")} = $install{$_}
+    for sort keys %install;
+  return;
+}
+
+sub _gen_subs {
+  my ($me, $target) = @_;
+  (
+    (map {;
+      my $type = $_;
+      $type => sub {
+        push @{$INFO{$target}{modifiers}||=[]}, [ $type => @_ ];
+        return;
+      };
+    } qw(before after around)),
+    requires => sub {
+      push @{$INFO{$target}{requires}||=[]}, @_;
       return;
-    };
-  }
-  *{_getglob "${target}::requires"} = sub {
-    push @{$INFO{$target}{requires}||=[]}, @_;
-    return;
-  };
-  *{_getglob "${target}::with"} = sub {
-    $me->apply_roles_to_package($target, @_);
-    return;
-  };
+    },
+    with => sub {
+      $me->apply_roles_to_package($target, @_);
+      return;
+    },
+  );
 }
 
 sub role_application_steps {
