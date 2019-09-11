@@ -69,8 +69,15 @@ sub import {
   my $me = shift;
   strict->import;
   warnings->import;
-  $me->_install_subs($target);
-  return if $me->is_role($target); # already exported into this package
+  $me->_install_subs($target, @_);
+  $me->make_role($target);
+  return;
+}
+
+sub make_role {
+  my ($me, $target) = @_;
+
+  return if $me->is_role($target);
   $INFO{$target}{is_role} = 1;
 
   my $non_methods = $me->_all_subs($target);
