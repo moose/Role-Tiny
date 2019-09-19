@@ -93,6 +93,7 @@ sub make_role {
 
 sub _install_subs {
   my ($me, $target) = @_;
+  return if $me->is_role($target);
   my %install = $me->_gen_subs($target);
   *{_getglob("${target}::${_}")} = $install{$_}
     for sort keys %install;
