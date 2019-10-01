@@ -1,5 +1,7 @@
 Revision history for Role-Tiny
 
+  - added tests for make_role
+
 2.001_000 - 2019-09-19
   - refactored method tracking to allow easier extending (such as by Moo)
   - added make_role method to make a package into a role, but without
