@@ -419,16 +419,9 @@ sub methods_provided_by {
 sub _install_methods {
   my ($me, $to, $role) = @_;
 
-  my $info = $INFO{$role};
-
   my $methods = $me->_concrete_methods_of($role);
 
-  # grab target symbol table
-  my $stash = _getstash($to);
-
   foreach my $i (keys %$methods) {
-    my $target = $stash->{$i};
-
     no warnings 'once';
     no strict 'refs';
 
