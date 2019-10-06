@@ -432,12 +432,19 @@ sub _install_methods {
 
   my $methods = $me->_concrete_methods_of($role);
 
-  foreach my $i (keys %$methods) {
-    no warnings 'once';
-    no strict 'refs';
+  my %existing_methods;
+  for my $package ($to, grep $_ ne $role, keys %{$APPLIED_TO{$to}}) {
+    @existing_methods{keys %{ $me->_concrete_methods_of($package) }} = ();;
+  }
 
+  # _concrete_methods_of caches its result on roles.  that cache needs to be
+  # invalidated after applying roles
+  delete $INFO{$to}{methods} if $INFO{$to};
+
+
+  foreach my $i (keys %$methods) {
     next
-      if exists &{"${to}::${i}"};
+      if exists $existing_methods{$i};
 
     my $glob = _getglob "${to}::${i}";
     *$glob = $methods->{$i};
