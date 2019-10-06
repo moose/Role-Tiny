@@ -19,6 +19,7 @@ BEGIN {
     = "$]" < 5.011 && !("$]" >= 5.009004 && "$]" < 5.010001)
       ? sub(){1} : sub(){0};
   *_MRO_MODULE = "$]" < 5.010 ? sub(){"MRO/Compat.pm"} : sub(){"mro.pm"};
+  *_CONSTANTS_DEFLATE = "$]" >= 5.012 && "$]" < 5.020 ? sub(){1} : sub(){0};
 }
 
 sub _getglob { no strict 'refs'; \*{$_[0]} }
@@ -57,7 +58,17 @@ sub _all_subs {
   my ($me, $package) = @_;
   my $stash = _getstash($package);
   return {
-    map +($_ => \&{"${package}::${_}"}),
+    map {;
+      no strict 'refs';
+      # this is an ugly hack to populate the scalar slot of any globs, to
+      # prevent perl from converting constants back into scalar refs in the
+      # stash when they are used (perl 5.12 - 5.18). scalar slots on their own
+      # aren't detectable through pure perl, so this seems like an acceptable
+      # compromise.
+      ${"${package}::${_}"} = ${"${package}::${_}"}
+        if _CONSTANTS_DEFLATE;
+      $_ => \&{"${package}::${_}"}
+    }
     grep exists &{"${package}::${_}"},
     grep !/::\z/,
     keys %$stash
