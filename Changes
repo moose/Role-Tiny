@@ -1,5 +1,6 @@
 Revision history for Role-Tiny
 
+2.001_002 - 2019-10-06
   - fix methods from roles composed via create_class_with_roles being treated
     differently from roles composed directly (RT#128470)
   - fix constants being included in the methods provided by a role if they
