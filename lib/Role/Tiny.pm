@@ -330,9 +330,14 @@ sub _composite_info_for {
   };
 }
 
+sub _composable_package_name_for {
+  my ($me, $role) = @_;
+  'Role::Tiny::_COMPOSABLE::'.$role;
+}
+
 sub _composable_package_for {
   my ($me, $role) = @_;
-  my $composed_name = 'Role::Tiny::_COMPOSABLE::'.$role;
+  my $composed_name = $me->_composable_package_name_for($role);
   return $composed_name if $COMPOSED{role}{$composed_name};
   $me->_install_methods($composed_name, $role);
   my $base_name = $composed_name.'::_BASE';
@@ -433,7 +438,13 @@ sub _install_methods {
   my $methods = $me->_concrete_methods_of($role);
 
   my %existing_methods;
-  for my $package ($to, grep $_ ne $role, keys %{$APPLIED_TO{$to}}) {
+
+  require(_MRO_MODULE);
+  my %isa = map +($_ => 1), @{mro::get_linear_isa($to)};
+  my @composed =
+    grep $_ ne $role && $isa{$me->_composable_package_name_for($_)},
+    keys %{$APPLIED_TO{$to}};
+  for my $package ($to, @composed) {
     @existing_methods{keys %{ $me->_concrete_methods_of($package) }} = ();;
   }
 
