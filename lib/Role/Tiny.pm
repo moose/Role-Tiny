@@ -80,8 +80,26 @@ sub import {
   my $me = shift;
   strict->import;
   warnings->import;
+  my $non_methods = $me->_non_methods($target);
   $me->_install_subs($target, @_);
   $me->make_role($target);
+  $me->_mark_new_non_methods($target, $non_methods)
+    if $non_methods && %$non_methods;
+  return;
+}
+
+sub _mark_new_non_methods {
+  my ($me, $target, $old_non_methods) = @_;
+
+  my $non_methods = $INFO{$target}{non_methods};
+
+  my $subs = $me->_all_subs($target);
+  for my $sub (keys %$subs) {
+    if ( exists $old_non_methods->{$sub} && $non_methods->{$sub} != $subs->{$sub} ) {
+      $non_methods->{$sub} = $subs->{$sub};
+    }
+  }
+
   return;
 }
 
