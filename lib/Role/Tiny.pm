@@ -438,14 +438,18 @@ sub _install_methods {
   my $methods = $me->_concrete_methods_of($role);
 
   my %existing_methods;
+  @existing_methods{keys %{ $me->_all_subs($to) }} = ();
 
-  require(_MRO_MODULE);
-  my %isa = map +($_ => 1), @{mro::get_linear_isa($to)};
-  my @composed =
-    grep $_ ne $role && $isa{$me->_composable_package_name_for($_)},
-    keys %{$APPLIED_TO{$to}};
-  for my $package ($to, @composed) {
-    @existing_methods{keys %{ $me->_concrete_methods_of($package) }} = ();;
+  my $applied_to = $APPLIED_TO{$to};
+  if ($applied_to && %$applied_to) {
+    require(_MRO_MODULE);
+    my %isa = map +($_ => 1), @{mro::get_linear_isa($to)};
+    my @composed =
+      grep $_ ne $role && $isa{$me->_composable_package_name_for($_)},
+      keys %{$APPLIED_TO{$to}};
+    for my $package (@composed) {
+      @existing_methods{keys %{ $me->_concrete_methods_of($package) }} = ();
+    }
   }
 
   # _concrete_methods_of caches its result on roles.  that cache needs to be
