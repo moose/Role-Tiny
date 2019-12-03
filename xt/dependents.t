@@ -1,17 +1,61 @@
 use strict;
 use warnings;
+
+my $v;
+my $doit;
+my @dists;
+BEGIN {
+  # this won't run by default anyway, so just display the full content so Travis
+  # doesn't abort due to lack of output.
+  $v = 1;
+  $doit = $ENV{EXTENDED_TESTING};
+
+  while (@ARGV) {
+    my $arg = shift @ARGV;
+    if ($arg eq '--') {
+      push @dists, @ARGV;
+      last;
+    }
+    elsif ($arg =~ /\A(?:-v|--verbose)\z/) {
+      $v = 1;
+    }
+    elsif ($arg =~ /\A(?:-q|--quiet)\z/) {
+      $v = 0;
+    }
+    elsif ($arg =~ /\A(?:--doit)\z/) {
+      $doit = 1;
+    }
+    elsif ($arg =~ /\A-/) {
+      die "Unsupported option $arg!\n";
+    }
+    else {
+      push @dists, $arg;
+    }
+  }
+
+  if (!@dists) {
+    @dists = (
+      'MSTROUT/Moo-0.009002.tar.gz', # earliest working version
+      'MSTROUT/Moo-1.000000.tar.gz',
+      'MSTROUT/Moo-1.000008.tar.gz',
+      'HAARG/Moo-1.007000.tar.gz',
+      'HAARG/Moo-2.000000.tar.gz',
+      'HAARG/Moo-2.001000.tar.gz',
+      'Moo',
+      'namespace::autoclean',
+      'Dancer2',
+      'MooX::Options',
+    );
+  }
+}
+
 use Test::More
-  !($ENV{EXTENDED_TESTING} || grep $_ eq '--doit', @ARGV)
-    ? (skip_all => 'Set EXTENDED_TESTING to enable dependents testing')
-    : ();
+  $doit ? (tests => scalar @dists)
+        : (skip_all => 'Set EXTENDED_TESTING to enable dependents testing');
 use IPC::Open3;
 use File::Spec;
 use Cwd qw(abs_path);
 use Config;
-
-# this won't run by default anyway, so just display the full content so Travis
-# doesn't abort due to lack of output.
-my $v = 1; # grep /\A(?:-v|--verbose)\z/, @ARGV;
 
 delete $ENV{AUTHOR_TESTING};
 delete $ENV{EXTENDED_TESTING};
@@ -45,32 +89,21 @@ sub find_hash_seed {
 }
 
 my $ext = qr{\.(?:t(?:ar\.)?(?:bz2|xz|gz)|tar|zip)};
-for my $dist (
-  'MSTROUT/Moo-0.009002.tar.gz', # earliest working version
-  'MSTROUT/Moo-1.000000.tar.gz',
-  'MSTROUT/Moo-1.000008.tar.gz',
-  'HAARG/Moo-1.007000.tar.gz',
-  'HAARG/Moo-2.000000.tar.gz',
-  'HAARG/Moo-2.001000.tar.gz',
-  'Moo',
-  'namespace::autoclean',
-  'Dancer2',
-  'MooX::Options',
-) {
+for my $dist (@dists) {
   note "Testing $dist ...";
 
   my $hash_seed;
 
-  # tests in Moo-0.009002 are sensitive to hash key order.  force one that
+  # tests in some older Moo are sensitive to hash key order.  force one that
   # works, since we still want to run the rest of the tests.  hash
   # implementation can change, so search for a value that works like we want.
-  if ($dist =~ m{\bMoo-0\.009002\b}) {
+  if ($dist =~ m{\bMoo-0\.00900[2-7]\b}) {
     $hash_seed = find_hash_seed('one', 'two');
   }
 
   note "Forcing hash seed $hash_seed for $dist" if defined $hash_seed;
   local $ENV{PERL_HASH_SEED} = $hash_seed if defined $hash_seed;
-  local $ENV{PERL_PERTURB_KEYS} = 0 if defined $hash_seed;
+  local $ENV{PERL_PERTURB_KEYS} = '0' if defined $hash_seed;
 
   my $name = $dist;
   $name =~ s{$ext$}{}
@@ -92,9 +125,13 @@ for my $dist (
       and $name = "$3 (latest)";
   }
 
-  ok $output =~ /--\s*OK\s*\z/ && $output !~ /--\s*NOT\s+OK\s*\z/,
-    "$name passed tests"
-    or (!$v and diag $output);
+  local $TODO = "distroprefs interfered with prereq installation"
+    if $output =~ /Disabled via prefs file/;
+
+  my $passed = $output =~ /--\s*OK\s*\z/ && $output !~ /--\s*NOT\s+OK\s*\z/;
+  ok $passed, "$name passed tests";
+  diag $output
+    if !$passed && !$v;
 }
 
 done_testing;
