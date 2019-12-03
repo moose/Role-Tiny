@@ -20,11 +20,6 @@ $ENV{NONINTERACTIVE_TESTING} = 1;
 $ENV{PERL_MM_USE_DEFAULT} = 1;
 delete $ENV{HARNESS_PERL_SWITCHES};
 
-# tests in Moo-0.009002 are sensitive to hash key order.  force one that
-# works, since we still want to run the rest of the tests.
-$ENV{PERL_HASH_SEED} = 0;
-$ENV{PERL_PERTURB_KEYS} = 0;
-
 my @extra_libs = do {
   my @libs = `"$^X" -le"print for \@INC"`;
   chomp @libs;
@@ -35,6 +30,19 @@ $ENV{PERL5LIB} = join($Config{path_sep}, @extra_libs, $ENV{PERL5LIB}||());
 
 open my $in, '<', File::Spec->devnull
   or die "can't open devnull: $!";
+
+sub find_hash_seed {
+  my $hash_seed;
+  for my $seed (0 .. 2**10) {
+    local $ENV{PERL_PERTURB_KEYS} = 0;
+    local $ENV{PERL_HASH_SEED} = "$]" >= 5.017006 ? sprintf "%x", $seed : $seed;
+    if (0 == system $^X, 'xt/check-hash-order.pl', @_) {
+      $hash_seed = $ENV{PERL_HASH_SEED};
+      last;
+    }
+  }
+  return $hash_seed;
+}
 
 my $ext = qr{\.(?:t(?:ar\.)?(?:bz2|xz|gz)|tar|zip)};
 for my $dist (
@@ -50,6 +58,19 @@ for my $dist (
   'MooX::Options',
 ) {
   note "Testing $dist ...";
+
+  my $hash_seed;
+
+  # tests in Moo-0.009002 are sensitive to hash key order.  force one that
+  # works, since we still want to run the rest of the tests.  hash
+  # implementation can change, so search for a value that works like we want.
+  if ($dist =~ m{\bMoo-0\.009002\b}) {
+    $hash_seed = find_hash_seed('one', 'two');
+  }
+
+  note "Forcing hash seed $hash_seed for $dist" if defined $hash_seed;
+  local $ENV{PERL_HASH_SEED} = $hash_seed if defined $hash_seed;
+  local $ENV{PERL_PERTURB_KEYS} = 0 if defined $hash_seed;
 
   my $name = $dist;
   $name =~ s{$ext$}{}
