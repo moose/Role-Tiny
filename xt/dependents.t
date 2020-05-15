@@ -33,7 +33,7 @@ BEGIN {
     }
   }
 
-  if (!@dists) {
+  if (!@dists && $doit) {
     @dists = (
       'MSTROUT/Moo-0.009002.tar.gz', # earliest working version
       'MSTROUT/Moo-1.000000.tar.gz',
@@ -50,8 +50,8 @@ BEGIN {
 }
 
 use Test::More
-  $doit ? (tests => scalar @dists)
-        : (skip_all => 'Set EXTENDED_TESTING to enable dependents testing');
+  @dists ? (tests => scalar @dists)
+         : (skip_all => 'Set EXTENDED_TESTING to enable dependents testing');
 use IPC::Open3;
 use File::Spec;
 use Cwd qw(abs_path);
@@ -78,14 +78,14 @@ open my $in, '<', File::Spec->devnull
 sub find_hash_seed {
   my $hash_seed;
   for my $seed (0 .. 2**10) {
+    my $hash_seed = "$]" >= 5.017006 ? sprintf "%x", $seed : $seed;
     local $ENV{PERL_PERTURB_KEYS} = 0;
-    local $ENV{PERL_HASH_SEED} = "$]" >= 5.017006 ? sprintf "%x", $seed : $seed;
+    local $ENV{PERL_HASH_SEED} = $hash_seed;
     if (0 == system $^X, 'xt/check-hash-order.pl', @_) {
-      $hash_seed = $ENV{PERL_HASH_SEED};
-      last;
+      return $hash_seed;
     }
   }
-  return $hash_seed;
+  return undef;
 }
 
 my $ext = qr{\.(?:t(?:ar\.)?(?:bz2|xz|gz)|tar|zip)};
@@ -101,7 +101,7 @@ for my $dist (@dists) {
     $hash_seed = find_hash_seed('one', 'two');
   }
 
-  note "Forcing hash seed $hash_seed for $dist" if defined $hash_seed;
+  diag "Forcing hash seed $hash_seed for $dist" if defined $hash_seed;
   local $ENV{PERL_HASH_SEED} = $hash_seed if defined $hash_seed;
   local $ENV{PERL_PERTURB_KEYS} = '0' if defined $hash_seed;
 
