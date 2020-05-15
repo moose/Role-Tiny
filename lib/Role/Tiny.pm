@@ -670,7 +670,7 @@ different roles, please refactor your codebase.
 
  before foo => sub { ... };
 
-See L<< Class::Method::Modifiers/before method(s) => sub { ... } >> for full
+See L<< Class::Method::Modifiers/before method(s) => sub { ... }; >> for full
 documentation.
 
 Note that since you are not required to use method modifiers,
@@ -682,7 +682,7 @@ both L<Class::Method::Modifiers> and L<Role::Tiny>.
 
  around foo => sub { ... };
 
-See L<< Class::Method::Modifiers/around method(s) => sub { ... } >> for full
+See L<< Class::Method::Modifiers/around method(s) => sub { ... }; >> for full
 documentation.
 
 Note that since you are not required to use method modifiers,
@@ -694,7 +694,7 @@ both L<Class::Method::Modifiers> and L<Role::Tiny>.
 
  after foo => sub { ... };
 
-See L<< Class::Method::Modifiers/after method(s) => sub { ... } >> for full
+See L<< Class::Method::Modifiers/after method(s) => sub { ... }; >> for full
 documentation.
 
 Note that since you are not required to use method modifiers,
