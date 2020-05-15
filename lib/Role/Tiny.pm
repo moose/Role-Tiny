@@ -135,6 +135,7 @@ sub _gen_subs {
     (map {;
       my $type = $_;
       $type => sub {
+        unshift @_, @{ +shift } if ref $_[0] eq 'ARRAY';
         push @{$INFO{$target}{modifiers}||=[]}, [ $type => @_ ];
         return;
       };
