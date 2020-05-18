@@ -135,7 +135,9 @@ sub _gen_subs {
     (map {;
       my $type = $_;
       $type => sub {
-        push @{$INFO{$target}{modifiers}||=[]}, [ $type => @_ ];
+        my $code = pop;
+        my @names = ref $_[0] eq 'ARRAY' ? @{ $_[0] } : @_;
+        push @{$INFO{$target}{modifiers}||=[]}, [ $type, @names, $code ];
         return;
       };
     } qw(before after around)),
@@ -368,8 +370,12 @@ sub _composable_package_for {
   { no strict 'refs'; @{"${composed_name}::ISA"} = ( $base_name ); }
   my $modifiers = $INFO{$role}{modifiers}||[];
   my @mod_base;
-  my @modifiers = grep !$composed_name->can($_),
-    do { my %h; @h{map @{$_}[1..$#$_-1], @$modifiers} = (); keys %h };
+  my %s;
+  my @modifiers =
+    grep !$composed_name->can($_),
+    grep !$s{$_}++,
+    map ref $_->[1] eq 'ARRAY' ? @{$_->[1]} : @{$_}[1 .. $#$_-1],
+    @$modifiers;
   foreach my $modified (@modifiers) {
     push @mod_base, "sub ${modified} { shift->next::method(\@_) }";
   }

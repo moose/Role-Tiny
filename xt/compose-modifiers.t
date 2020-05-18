@@ -56,4 +56,41 @@ foreach my $combo (
     ' ... with correct error message';
 }
 
+{
+  package WrapsMultiple;
+  use Role::Tiny;
+  around 'method1', 'method2', sub {
+    my $orig = shift;
+    return (__PACKAGE__, $orig->(@_));
+  };
+  around [ 'method3', 'method4' ], sub {
+    my $orig = shift;
+    return (__PACKAGE__, $orig->(@_));
+  };
+}
+
+{
+  package ClassToWrapMultiple;
+  use Role::Tiny::With;
+  sub method1 { __PACKAGE__ }
+  sub method2 { __PACKAGE__ }
+  sub method3 { __PACKAGE__ }
+  sub method4 { __PACKAGE__ }
+  with 'WrapsMultiple';
+}
+
+for my $method (qw(method1 method2)) {
+  is_deeply(
+    [ ClassToWrapMultiple->$method ], [ 'WrapsMultiple', 'ClassToWrapMultiple' ],
+    'wrapping multiple methods using list works',
+  );
+}
+
+for my $method (qw(method3 method4)) {
+  is_deeply(
+    [ ClassToWrapMultiple->$method ], [ 'WrapsMultiple', 'ClassToWrapMultiple' ],
+    'wrapping multiple methods using arrayref works',
+  );
+}
+
 done_testing;
