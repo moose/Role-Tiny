@@ -686,6 +686,22 @@ are applied in a single call (single with statement), then if any of their
 provided methods clash, an exception is raised unless the class provides
 a method since this conflict indicates a potential problem.
 
+=head2 ROLE METHODS
+
+All subs created after importing Role::Tiny will be considered methods to be
+composed. For example:
+
+    package MyRole;
+    use List::Util qw(min);
+    sub mysub { }
+    use Role::Tiny;
+    use List::Util qw(max);
+    sub mymethod { }
+
+In this role, C<max> and C<mymethod> will be included when composing MyRole,
+and C<min> and C<mysub> will not. For additional control, L<namespace::clean>
+can be used to exclude undesired subs from roles.
+
 =head1 IMPORTED SUBROUTINES
 
 =head2 requires
