@@ -1,5 +1,13 @@
 Revision history for Role-Tiny
 
+  - Fix Pod links to Class::Method::Modifiers
+  - Tweaks to author tests
+  - Additional tests for working with older Moo versions
+  - Additional tests for module loading
+  - Allow method modifiers to be specified with an array reference of method
+    names, rather than a list. This now matches how the corresponding
+    Class::Method::Modifiers subs can be called.
+
 2.001004 - 2019-10-25
   - fix methods being excluded from composition if they previously existed in
     the composing role (RT#130811)
