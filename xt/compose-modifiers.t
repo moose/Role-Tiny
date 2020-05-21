@@ -12,6 +12,7 @@ use Class::Method::Modifiers 1.05 ();
   package Three; use Role::Tiny;
   around foo => sub { my $orig = shift; (__PACKAGE__, $orig->(@_)) };
   package Four; use Role::Tiny;
+  requires 'foo';
   around foo => sub { my $orig = shift; (__PACKAGE__, $orig->(@_)) };
   package BaseClass; sub foo { __PACKAGE__ }
 }
@@ -32,27 +33,27 @@ foreach my $combo (
 }
 
 {
-  package Five; use Role::Tiny;
-  requires 'bar';
-  around bar => sub { my $orig = shift; $orig->(@_) };
+  package BaseClassNoFoo;
+  sub bar { __PACKAGE__ }
 }
+
 {
   is eval {
-    package WithFive;
+    package WithFour;
     use Role::Tiny::With;
-    use base 'BaseClass';
-    with 'Five';
+    use base 'BaseClassNoFoo';
+    with 'Four';
   }, undef,
     "composing an around modifier fails when method doesn't exist";
-  like $@, qr/Can't apply Five to WithFive - missing bar/,
+  like $@, qr/Can't apply Four to WithFour - missing foo/,
     ' ... with correct error message';
 }
 {
   is eval {
-    Role::Tiny->create_class_with_roles('BaseClass', 'Five');
+    Role::Tiny->create_class_with_roles('BaseClassNoFoo', 'Four');
   }, undef,
     "composing an around modifier fails when method doesn't exist";
-  like $@, qr/Can't apply Five to .* - missing bar/,
+  like $@, qr/Can't apply Four to .* - missing foo/,
     ' ... with correct error message';
 }
 
