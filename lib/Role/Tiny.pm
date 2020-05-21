@@ -376,13 +376,12 @@ sub _composable_package_for {
     grep !$s{$_}++,
     map ref $_->[1] eq 'ARRAY' ? @{$_->[1]} : @{$_}[1 .. $#$_-1],
     @$modifiers;
-  foreach my $modified (@modifiers) {
-    push @mod_base, "sub ${modified} { shift->next::method(\@_) }";
-  }
+  my $code = "package ${base_name};\n" . join '',
+    map "sub $_ { shift->next::method(\@_) }\n", @modifiers;
   my $e;
   {
     local $@;
-    eval(my $code = join "\n", "package ${base_name};", @mod_base);
+    eval $code;
     $e = "Evaling failed: $@\nTrying to eval:\n${code}" if $@;
   }
   die $e if $e;
