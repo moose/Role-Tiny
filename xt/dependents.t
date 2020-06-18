@@ -126,7 +126,7 @@ for my $dist (@dists) {
   }
 
   local $TODO = "distroprefs interfered with prereq installation"
-    if $output =~ /Disabled via prefs file/;
+    if $output =~ /Disabled via prefs file|allow_installing_outdated_dists/;
 
   my $passed = $output =~ /--\s*OK\s*\z/ && $output !~ /--\s*NOT\s+OK\s*\z/;
   ok $passed, "$name passed tests";
