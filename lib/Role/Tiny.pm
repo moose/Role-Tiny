@@ -224,8 +224,6 @@ sub create_class_with_roles {
     croak "${role} is not a Role::Tiny" unless $me->is_role($role);
   }
 
-  require(_MRO_MODULE);
-
   my $composite_info = $me->_composite_info_for(@roles);
   my %conflicts = %{$composite_info->{conflicts}};
   if (keys %conflicts) {
@@ -238,6 +236,8 @@ sub create_class_with_roles {
         } keys %conflicts;
     croak $fail;
   }
+
+  require(_MRO_MODULE);
 
   my @composable = map $me->_composable_package_for($_), reverse @roles;
 
@@ -465,8 +465,7 @@ sub _install_methods {
 
   my $applied_to = $APPLIED_TO{$to};
   if ($applied_to && %$applied_to) {
-    require(_MRO_MODULE);
-    my %isa = map +($_ => 1), @{mro::get_linear_isa($to)};
+    my %isa = map +($_ => 1), @{_linear_isa($to)};
     my @composed =
       grep $_ ne $role && $isa{$me->_composable_package_name_for($_)},
       keys %{$APPLIED_TO{$to}};
@@ -561,10 +560,35 @@ sub _install_does {
   return *{_getglob "${to}::DOES"} = $new_sub;
 }
 
+sub _linear_isa($;$) {
+  if (defined &mro::get_linear_isa) {
+    no warnings 'redefine';
+    *_linear_isa = \&mro::get_linear_isa;
+    goto &mro::get_linear_isa;
+  }
+
+  my @check = shift;
+  my @lin;
+
+  my %found;
+  while (defined(my $check = shift @check)) {
+      push @lin, $check;
+      no strict 'refs';
+      unshift @check, grep !$found{$_}++, @{"$check\::ISA"};
+  }
+
+  return \@lin;
+}
+
+# use core function when possible
+if (defined &mro::get_linear_isa) {
+  no warnings 'redefine';
+  *_linear_isa = \&mro::get_linear_isa;
+}
+
 sub does_role {
   my ($proto, $role) = @_;
-  require(_MRO_MODULE);
-  foreach my $class (@{mro::get_linear_isa(ref($proto)||$proto)}) {
+  foreach my $class (@{_linear_isa(ref($proto)||$proto)}) {
     return 1 if exists $APPLIED_TO{$class}{$role};
   }
   return 0;
