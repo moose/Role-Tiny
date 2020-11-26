@@ -249,6 +249,17 @@ SKIP: {
     is $success, 1, 'role conflict resolved by superclass method' or diag "Error: $@";
     can_ok 'My::Class::Child', 'method';
     is My::Class::Child->method, 'My::Class::Base method', 'inherited method prevails';
+
+    $success = eval q{
+        package My::Class::Child2;
+        use base 'My::Class::Base';
+        use Role::Tiny::With;
+        with qw/My::Does::Basic1/;
+        1;
+    };
+    is $success, 1, 'role composed after conflict resolution' or diag "Error: $@";
+    can_ok 'My::Class::Child2', 'method';
+    is My::Class::Child2->method, 'My::Does::Basic1 method', 'role method applied';
 }
 
 done_testing;

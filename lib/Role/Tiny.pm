@@ -294,10 +294,16 @@ sub apply_roles_to_package {
   # composed role. we don't have an actual composed role, but because
   # we know the target class already provides them, we can instead
   # pretend that the roles don't do for the duration of application.
-  my @role_methods = map $me->_concrete_methods_of($_), @roles;
-  # separate loops, since local ..., delete ... for ...; creates a scope
-  local @{$_}{@have} for @role_methods;
-  delete @{$_}{@have} for @role_methods;
+  my @role_methods = map $me->_concrete_methods_of($_), @roles
+    or goto DONE_REMOVE_METHODS;
+  # goto loop since for creates a scope
+  REMOVE_METHODS:
+  my $role_methods = pop @role_methods;
+  local @{$role_methods}{@have};
+  delete @{$role_methods}{@have};
+  goto REMOVE_METHODS
+    if @role_methods;
+  DONE_REMOVE_METHODS:
 
   # the if guard here is essential since otherwise we accidentally create
   # a $INFO for something that isn't a Role::Tiny (or Moo::Role) because
