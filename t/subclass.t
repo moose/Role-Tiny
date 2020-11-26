@@ -69,19 +69,21 @@ is $backcompat_called, 0,
   requires 'extra_sub';
 }
 eval { Role::Tiny->create_class_with_roles('ClasswWithoutExtraMethod', 'RoleWithRequires') };
-isnt $@, '',
+like $@, qr/extra_sub/,
   'requires checked properly during create_class_with_roles';
 
 
 SKIP: {
   skip "Class::Method::Modifiers not installed or too old", 1
     unless eval "use Class::Method::Modifiers 1.05; 1";
-  package RoleWithAround;
-  use Role::Tiny;
-  around extra_sub => sub { my $orig = shift; $orig->(@_); };
+  {
+    package RoleWithAround;
+    use Role::Tiny;
+    around extra_sub => sub { my $orig = shift; $orig->(@_); };
+  }
 
   eval { Role::Tiny->create_class_with_roles('ClasswWithoutExtraMethod', 'RoleWithAround') };
-  ::isnt $@, '',
+  like $@, qr/extra_sub/,
     'requires for modifiers checked properly during create_class_with_roles';
 }
 

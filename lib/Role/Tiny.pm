@@ -349,7 +349,10 @@ sub _composite_info_for {
       $methods{$_}{$this_methods->{$_}} = $role for keys %$this_methods;
     }
     my %requires;
-    @requires{map @{$INFO{$_}{requires}||[]}, @roles} = ();
+    @requires{map +(
+      @{$INFO{$_}{requires}||[]},
+      (map +(@{$_}[1 .. $#$_ - 1]), @{$INFO{$_}{modifiers}||[]}),
+    ), @roles} = ();
     delete $requires{$_} for keys %methods;
     delete $methods{$_} for grep keys(%{$methods{$_}}) == 1, keys %methods;
     +{ conflicts => \%methods, requires => [keys %requires] }
