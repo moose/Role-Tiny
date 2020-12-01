@@ -605,7 +605,14 @@ sub does_role {
 
 sub is_role {
   my ($me, $role) = @_;
-  return !!($INFO{$role} && ($INFO{$role}{is_role} || $INFO{$role}{not_methods} || $INFO{$role}{non_methods}));
+  return !!($INFO{$role} && (
+    $INFO{$role}{is_role}
+    # these are for backward compatibility with older Moo that overrode some
+    # methods without calling the originals, thus not getting is_role set
+    || $INFO{$role}{requires}
+    || $INFO{$role}{not_methods}
+    || $INFO{$role}{non_methods}
+  ));
 }
 
 1;
