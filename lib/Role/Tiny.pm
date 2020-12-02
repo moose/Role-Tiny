@@ -571,7 +571,7 @@ sub _install_does {
 
 sub _linear_isa($;$) {
   if (defined &mro::get_linear_isa) {
-    no warnings 'redefine';
+    no warnings 'redefine', 'prototype';
     *_linear_isa = \&mro::get_linear_isa;
     goto &mro::get_linear_isa;
   }
@@ -591,7 +591,7 @@ sub _linear_isa($;$) {
 
 # use core function when possible
 if (defined &mro::get_linear_isa) {
-  no warnings 'redefine';
+  no warnings 'redefine', 'prototype';
   *_linear_isa = \&mro::get_linear_isa;
 }
 
