@@ -5,14 +5,14 @@ use Test::More;
 my %apply_steps;
 BEGIN {
   package MyRoleTinyExtension;
-  use Role::Tiny;
+  use Role::Tiny ();
+  our @ISA = qw(Role::Tiny);
 
-
-  around role_application_steps => sub {
-    my ($orig, $self) = (shift, shift);
+  sub role_application_steps {
+    my $self = shift;
     return (
       'role_apply_before',
-      $self->$orig(@_),
+      $self->SUPER::role_application_steps(@_),
       'Fully::Qualified::role_apply_after',
     );
   };
@@ -31,18 +31,16 @@ BEGIN {
   }
 }
 
-my $extension = Role::Tiny->create_class_with_roles('Role::Tiny', 'MyRoleTinyExtension');
-
 {
   package ExtendedRole;
-  $extension->import;
+  MyRoleTinyExtension->import;
 
   sub added_sub {}
 }
 
 {
   package ApplyTo;
-  $extension->apply_role_to_package(__PACKAGE__, 'ExtendedRole');
+  MyRoleTinyExtension->apply_role_to_package(__PACKAGE__, 'ExtendedRole');
 }
 
 is $apply_steps{'ApplyTo'}{'ExtendedRole'}{before}, 1,
