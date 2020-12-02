@@ -253,7 +253,8 @@ cpan('CPAN::Shell->o', 'conf');
   my $yaml = $CPAN::Config->{yaml_module};
   if ($yaml) {
     (my $mod = "$yaml.pm") =~ s{::}{/}g;
-    require $mod;
+    eval { require $mod }
+      or undef $yaml;
   }
 
   for my $dist (keys %$prefs) {
@@ -264,13 +265,12 @@ cpan('CPAN::Shell->o', 'conf');
       print { $fh } $yaml->can('Dump')->(@$prefs);
       close $fh;
     }
-    else {
-      local $Data::Dumper::Sortkeys = 1;
-      local $Data::Dumper::Indent = 1;
-      open my $fh, '>', "$prefs_dir/$dist.dd";
-      print { $fh } Data::Dumper::Dumper(@$prefs);
-      close $fh;
-    }
+
+    local $Data::Dumper::Sortkeys = 1;
+    local $Data::Dumper::Indent = 1;
+    open my $fh, '>', "$prefs_dir/$dist.dd";
+    print { $fh } Data::Dumper::Dumper(@$prefs);
+    close $fh;
   }
 }
 
