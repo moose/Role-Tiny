@@ -60,7 +60,7 @@ is $backcompat_called, 0,
   'overridden role_application_steps prevents backcompat attempt';
 
 {
-  package ClasswWithoutExtraMethod;
+  package ClassWithoutExtraMethod;
   sub foo {}
 }
 {
@@ -68,7 +68,7 @@ is $backcompat_called, 0,
   use Role::Tiny;
   requires 'extra_sub';
 }
-eval { Role::Tiny->create_class_with_roles('ClasswWithoutExtraMethod', 'RoleWithRequires') };
+eval { Role::Tiny->create_class_with_roles('ClassWithoutExtraMethod', 'RoleWithRequires') };
 like $@, qr/extra_sub/,
   'requires checked properly during create_class_with_roles';
 
@@ -82,7 +82,7 @@ SKIP: {
     around extra_sub => sub { my $orig = shift; $orig->(@_); };
   }
 
-  eval { Role::Tiny->create_class_with_roles('ClasswWithoutExtraMethod', 'RoleWithAround') };
+  eval { Role::Tiny->create_class_with_roles('ClassWithoutExtraMethod', 'RoleWithAround') };
   like $@, qr/extra_sub/,
     'requires for modifiers checked properly during create_class_with_roles';
 }
