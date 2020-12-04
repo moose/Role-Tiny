@@ -153,20 +153,12 @@ sub _gen_subs {
 }
 
 sub role_application_steps {
-  qw(_install_methods _check_requires _install_modifiers _copy_applied_list);
-}
-
-sub apply_single_role_to_package {
-  my ($me, $to, $role) = @_;
-
-  _load_module($role);
-
-  croak "This is apply_role_to_package" if ref($to);
-  croak "${role} is not a Role::Tiny" unless $me->is_role($role);
-
-  foreach my $step ($me->role_application_steps) {
-    $me->$step($to, $role);
-  }
+  qw(
+    _install_methods
+    _check_requires
+    _install_modifiers
+    _copy_applied_list
+  );
 }
 
 sub _copy_applied_list {
@@ -205,15 +197,7 @@ sub _composite_name {
 sub create_class_with_roles {
   my ($me, $superclass, @roles) = @_;
 
-  croak "No roles supplied!" unless @roles;
-
-  _load_module($superclass);
-  {
-    my %seen;
-    if (my @dupes = grep 1 == $seen{$_}++, @roles) {
-      croak "Duplicated roles: ".join(', ', @dupes);
-    }
-  }
+  $me->_check_roles(@roles);
 
   my ($new_name, $compose_name) = $me->_composite_name($superclass, @roles);
 
@@ -265,73 +249,94 @@ sub create_class_with_roles {
   return $new_name;
 }
 
-# preserved for compat, and apply_roles_to_package calls it to allow an
-# updated Role::Tiny to use a non-updated Moo::Role
+sub _check_roles {
+  my ($me, @roles) = @_;
+  croak "No roles supplied!" unless @roles;
 
-sub apply_role_to_package { shift->apply_single_role_to_package(@_) }
+  my %seen;
+  if (my @dupes = grep 1 == $seen{$_}++, @roles) {
+    croak "Duplicated roles: ".join(', ', @dupes);
+  }
+
+  foreach my $role (@roles) {
+    _load_module($role);
+    croak "${role} is not a Role::Tiny" unless $me->is_role($role);
+  }
+}
+
+our %BACKCOMPAT_HACK;
+$BACKCOMPAT_HACK{+__PACKAGE__} = 0;
+sub _want_backcompat_hack {
+  my $me = shift;
+  return $BACKCOMPAT_HACK{$me}
+    if exists $BACKCOMPAT_HACK{$me};
+  no warnings 'uninitialized';
+  $BACKCOMPAT_HACK{$me} =
+    $me->can('apply_single_role_to_package') != \&apply_single_role_to_package
+    && $me->can('role_application_steps') == \&role_application_steps
+}
+
+our $IN_APPLY_ROLES;
+sub apply_single_role_to_package {
+  return
+    if $IN_APPLY_ROLES;
+  local $IN_APPLY_ROLES = 1;
+
+  my ($me, $to, $role) = @_;
+  $me->apply_roles_to_package($to, $role);
+}
+
+sub apply_role_to_package {
+  my ($me, $to, $role) = @_;
+  $me->apply_roles_to_package($to, $role);
+}
 
 sub apply_roles_to_package {
   my ($me, $to, @roles) = @_;
 
-  return $me->apply_role_to_package($to, $roles[0]) if @roles == 1;
+  croak "Can't apply roles to object with apply_roles_to_package"
+    if ref $to;
 
-  my %conflicts = %{$me->_composite_info_for(@roles)->{conflicts}};
-  my @have = grep $to->can($_), keys %conflicts;
-  delete @conflicts{@have};
+  $me->_check_roles(@roles);
 
-  if (keys %conflicts) {
-    my $fail =
-      join "\n",
-        map {
-          "Due to a method name conflict between roles "
-          ."'".join(' and ', sort values %{$conflicts{$_}})."'"
-          .", the method '$_' must be implemented by '${to}'"
-        } keys %conflicts;
-    croak $fail;
+  my @have_conflicts;
+  my %role_methods;
+
+  if (@roles > 1) {
+    my %conflicts = %{$me->_composite_info_for(@roles)->{conflicts}};
+    @have_conflicts = grep $to->can($_), keys %conflicts;
+    delete @conflicts{@have_conflicts};
+
+    if (keys %conflicts) {
+      my $fail =
+        join "\n",
+          map {
+            "Due to a method name conflict between roles "
+            ."'".join(' and ', sort values %{$conflicts{$_}})."'"
+            .", the method '$_' must be implemented by '${to}'"
+          } sort keys %conflicts;
+      croak $fail;
+    }
+
+    %role_methods = map +($_ => $me->_concrete_methods_of($_)), @roles;
   }
 
-  # conflicting methods are supposed to be treated as required by the
-  # composed role. we don't have an actual composed role, but because
-  # we know the target class already provides them, we can instead
-  # pretend that the roles don't do for the duration of application.
-  my @role_methods = map $me->_concrete_methods_of($_), @roles
-    or goto DONE_REMOVE_METHODS;
-  # goto loop since for creates a scope
-  REMOVE_METHODS:
-  my $role_methods = pop @role_methods;
-  local @{$role_methods}{@have};
-  delete @{$role_methods}{@have};
-  goto REMOVE_METHODS
-    if @role_methods;
-  DONE_REMOVE_METHODS:
-
-  # the if guard here is essential since otherwise we accidentally create
-  # a $INFO for something that isn't a Role::Tiny (or Moo::Role) because
-  # autovivification hates us and wants us to die()
-  if ($INFO{$to}) {
-    delete $INFO{$to}{methods}; # reset since we're about to add methods
-  }
-
-  # backcompat: allow subclasses to use apply_single_role_to_package
-  # to apply changes.  set a local var so ours does nothing.
-  our %BACKCOMPAT_HACK;
-  if($me ne __PACKAGE__
-      and exists $BACKCOMPAT_HACK{$me} ? $BACKCOMPAT_HACK{$me} :
-      $BACKCOMPAT_HACK{$me} =
-        $me->can('role_application_steps')
-          == \&role_application_steps
-        && $me->can('apply_single_role_to_package')
-          != \&apply_single_role_to_package
-  ) {
+  if (!$IN_APPLY_ROLES and _want_backcompat_hack($me)) {
+    local $IN_APPLY_ROLES = 1;
     foreach my $role (@roles) {
       $me->apply_single_role_to_package($to, $role);
     }
   }
-  else {
-    foreach my $step ($me->role_application_steps) {
-      foreach my $role (@roles) {
-        $me->$step($to, $role);
-      }
+
+  my $role_methods;
+  foreach my $step ($me->role_application_steps) {
+    foreach my $role (@roles) {
+      $role_methods = $role_methods{$role} and (
+        (local @{$role_methods}{@have_conflicts}),
+        (delete @{$role_methods}{@have_conflicts}),
+      );
+
+      $me->$step($to, $role);
     }
   }
   $APPLIED_TO{$to}{join('|',@roles)} = 1;
