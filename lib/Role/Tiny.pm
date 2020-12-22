@@ -199,6 +199,7 @@ sub create_class_with_roles {
 
   return $new_name if $COMPOSED{class}{$new_name};
 
+  $COMPOSED{base}{$new_name} = $superclass;
   *{_getglob("${new_name}::ISA")} = [ $superclass ];
   $me->apply_roles_to_package($new_name, @roles);
   $COMPOSED{class}{$new_name} = 1;
@@ -263,12 +264,13 @@ sub apply_roles_to_package {
     delete @conflicts{@have_conflicts};
 
     if (keys %conflicts) {
+      my $class = $COMPOSED{base}{$to} || $to;
       my $fail =
         join "\n",
           map {
             "Due to a method name conflict between roles "
             .join(' and ', map "'$_'", sort values %{$conflicts{$_}})
-            .", the method '$_' must be implemented by '${to}'"
+            .", the method '$_' must be implemented by '$class'"
           } sort keys %conflicts;
       croak $fail;
     }
