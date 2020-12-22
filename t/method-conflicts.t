@@ -27,7 +27,7 @@ ok(
 
 like(
     $@,
-    qr{^Due to a method name conflict between roles 'Local::R. and Local::R.', the method 'method' must be implemented by 'Local::C1'},
+    qr{^Due to a method name conflict between roles 'Local::R.' and 'Local::R.', the method 'method' must be implemented by 'Local::C1'},
     '... with correct error message',
 );
 

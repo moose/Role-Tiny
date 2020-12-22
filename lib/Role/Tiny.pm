@@ -267,7 +267,7 @@ sub apply_roles_to_package {
         join "\n",
           map {
             "Due to a method name conflict between roles "
-            ."'".join(' and ', sort values %{$conflicts{$_}})."'"
+            .join(' and ', map "'$_'", sort values %{$conflicts{$_}})
             .", the method '$_' must be implemented by '${to}'"
           } sort keys %conflicts;
       croak $fail;
