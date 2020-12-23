@@ -1,5 +1,6 @@
 Revision history for Role-Tiny
 
+2.002_000 - 2020-12-23
   - Refactored create_class_with_roles to not use "composable packages". This
     was an optimization for when a role is used in many different uses of
     create_class_with_roles, but required an entirely separate implementation,
