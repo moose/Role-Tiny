@@ -117,44 +117,48 @@ SKIP: {
     'methods added by create_class_with_roles treated equal to those added with apply_roles_to_package';
 }
 
-BEGIN {
-  package CreateMITest::Top;
-  sub method { return __PACKAGE__ }
+SKIP: {
+  skip "Class::Method::Modifiers not installed or too old", 1
+    unless eval "use Class::Method::Modifiers 1.05; 1";
+  {
+    package CreateMITest::Top;
+    sub method { return __PACKAGE__ }
 
-  package CreateMITest::Left;
-  our @ISA = qw(CreateMITest::Top);
+    package CreateMITest::Left;
+    our @ISA = qw(CreateMITest::Top);
 
-  package CreateMITest::Right;
-  our @ISA = qw(CreateMITest::Top);
-  sub method { return (__PACKAGE__, $_[0]->SUPER::method); }
+    package CreateMITest::Right;
+    our @ISA = qw(CreateMITest::Top);
+    sub method { return (__PACKAGE__, $_[0]->SUPER::method); }
 
-  package CreateMITest::Bottom;
-  our @ISA = qw(CreateMITest::Left CreateMITest::Right);
+    package CreateMITest::Bottom;
+    our @ISA = qw(CreateMITest::Left CreateMITest::Right);
+  }
+
+  {
+    package CreateMITest::MyRole;
+    use Role::Tiny;
+    around method => sub {
+      my ($orig, $self) = (shift, shift);
+      return (__PACKAGE__, $self->$orig);
+    };
+  }
+
+  {
+    package CreateMITest::MyChild;
+    use Role::Tiny::With;
+    our @ISA = qw(CreateMITest::Bottom);
+    with 'CreateMITest::MyRole';
+  }
+
+  my $child_with = 'CreateMITest::MyChild';
+  my $child_gen = Role::Tiny->create_class_with_roles('CreateMITest::Bottom', 'CreateMITest::MyRole');
+
+  my @want = $child_with->method;
+  my @got = $child_gen->method;
+
+  is join(', ', @got), join(', ', @want),
+    'create_class_with_roles follows same MRO as equivalent using with';
 }
-
-BEGIN {
-  package CreateMITest::MyRole;
-  use Role::Tiny;
-  around method => sub {
-    my ($orig, $self) = (shift, shift);
-    return (__PACKAGE__, $self->$orig);
-  };
-}
-
-BEGIN {
-  package CreateMITest::MyChild;
-  use Role::Tiny::With;
-  our @ISA = qw(CreateMITest::Bottom);
-  with 'CreateMITest::MyRole';
-}
-
-my $child_with = 'CreateMITest::MyChild';
-my $child_gen = Role::Tiny->create_class_with_roles('CreateMITest::Bottom', 'CreateMITest::MyRole');
-
-my @want = $child_with->method;
-my @got = $child_gen->method;
-
-is join(', ', @got), join(', ', @want),
-  'create_class_with_roles follows same MRO as equivalent using with';
 
 done_testing;
