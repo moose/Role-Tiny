@@ -1,5 +1,6 @@
 Revision history for Role-Tiny
 
+2.002_001 - 2020-12-27
   - fix tests when Class::Method::Modifiers is not installed
 
 2.002_000 - 2020-12-23
