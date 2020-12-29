@@ -379,6 +379,7 @@ sub _concrete_methods_of {
 
 sub methods_provided_by {
   my ($me, $role) = @_;
+  $me->_require_module($role);
   croak "${role} is not a ${me}" unless $me->is_role($role);
   sort (keys %{$me->_concrete_methods_of($role)}, @{$INFO{$role}->{requires}||[]});
 }
