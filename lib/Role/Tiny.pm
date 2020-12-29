@@ -53,6 +53,10 @@ sub _load_module {
   return 1;
 }
 
+sub _require_module {
+  _load_module($_[1]);
+}
+
 sub _all_subs {
   my ($me, $package) = @_;
   my $stash = _getstash($package);
@@ -216,7 +220,7 @@ sub _check_roles {
   }
 
   foreach my $role (@roles) {
-    _load_module($role);
+    $me->_require_module($role);
     croak "${role} is not a ${me}" unless $me->is_role($role);
   }
 }
