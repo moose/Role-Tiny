@@ -217,7 +217,7 @@ sub _check_roles {
 
   foreach my $role (@roles) {
     _load_module($role);
-    croak "${role} is not a Role::Tiny" unless $me->is_role($role);
+    croak "${role} is not a ${me}" unless $me->is_role($role);
   }
 }
 
@@ -375,7 +375,7 @@ sub _concrete_methods_of {
 
 sub methods_provided_by {
   my ($me, $role) = @_;
-  croak "${role} is not a Role::Tiny" unless $me->is_role($role);
+  croak "${role} is not a ${me}" unless $me->is_role($role);
   sort (keys %{$me->_concrete_methods_of($role)}, @{$INFO{$role}->{requires}||[]});
 }
 
