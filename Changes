@@ -1,5 +1,6 @@
 Revision history for Role-Tiny
 
+2.002_002 - 2021-01-03
   - refactored some internals for subclasses to use
   - methods_provided_by will ensure the module is loaded before checking for
     methods
