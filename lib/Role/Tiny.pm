@@ -201,10 +201,17 @@ sub create_class_with_roles {
 
   my $new_name = $me->_composite_name($superclass, @roles);
 
-  return $new_name if $COMPOSED{class}{$new_name};
+  return $new_name
+    if $COMPOSED{class}{$new_name};
+
+  return $me->_build_class_with_roles($new_name, $superclass, @roles);
+}
+
+sub _build_class_with_roles {
+  my ($me, $new_name, $superclass, @roles) = @_;
 
   $COMPOSED{base}{$new_name} = $superclass;
-  *{_getglob("${new_name}::ISA")} = [ $superclass ];
+  @{*{_getglob("${new_name}::ISA")}} = ( $superclass );
   $me->apply_roles_to_package($new_name, @roles);
   $COMPOSED{class}{$new_name} = 1;
   return $new_name;
