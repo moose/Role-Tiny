@@ -39,12 +39,28 @@ my %META = (
   no_index => {
     directory => [ 't', 'xt' ]
   },
+  dynamic_config => 0,
+  x_static_install => 1,
 );
 
-my $xt = $ENV{EXTENDED_TESTING};
+my $xt = $ENV{EXTENDED_TESTING} && do {
+  my %x_prereqs = (
+    %{ $META{prereqs}{develop}{requires} },
+  );
+  local $@;
+  !grep !eval {
+    my $module = $_;
+    my $v = $x_prereqs{$module};
+    (my $file = "$module.pm") =~ s{::}{/}g;
+    require $file;
+    $module->VERSION($v)
+      if $v;
+    1;
+  }, sort keys %x_prereqs;
+};
+
 my %MM_ARGS = (
   ($xt ? (
-    TEST_REQUIRES => { %{ $META{prereqs}{develop}{requires} } },
     test => { TESTS => 't/*.t xt/*.t' },
   ):()),
 );
