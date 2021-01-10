@@ -12,8 +12,8 @@ use Exporter 'import';
 our @EXPORT = qw( with );
 
 sub with {
-    my $target = caller;
-    Role::Tiny->apply_roles_to_package($target, @_)
+  my $target = caller;
+  Role::Tiny->apply_roles_to_package($target, @_)
 }
 
 1;

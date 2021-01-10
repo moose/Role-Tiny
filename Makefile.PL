@@ -30,8 +30,8 @@ my %META = (
       type => 'git',
     },
     bugtracker => {
-        mailto => 'bug-Role-Tiny@rt.cpan.org',
-        web => 'https://rt.cpan.org/Public/Dist/Display.html?Name=Role-Tiny',
+      mailto => 'bug-Role-Tiny@rt.cpan.org',
+      web => 'https://rt.cpan.org/Public/Dist/Display.html?Name=Role-Tiny',
     },
     x_IRC => 'irc://irc.perl.org/#moose',
     license => [ 'http://dev.perl.org/licenses/' ],

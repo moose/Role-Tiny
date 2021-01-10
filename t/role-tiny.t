@@ -98,7 +98,7 @@ is(ExtraClass->baz, 'class baz', 'method from class');
 
 my $new_class;
 eval {
-    $new_class = Role::Tiny->create_class_with_roles('MyClass', 'ExtraRole');
+  $new_class = Role::Tiny->create_class_with_roles('MyClass', 'ExtraRole');
 } or $@ ||= "false exception!";
 is $@, '', 'No errors creating class with roles';
 
