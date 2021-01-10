@@ -127,7 +127,7 @@ my $prefs = do {
         },
       }),
     ],
-    'Role::Tiny' => [
+    'Role-Tiny' => [
       {
         match => { distribution => "\\bRole-Tiny-\\b" },
         install => { commandline => 'echo "skipped"' },
