@@ -1,5 +1,14 @@
 Revision history for Role-Tiny
 
+  - set dynamic_config to 0 and x_static_install to 1
+  - fixed filenames in dependents author test to not use colons
+  - removed MRO::Compat from prereqs as it is no longer used
+  - marked Class::Method::Modifiers as a hard developer dependency rather than
+    a recommended developer dependency
+  - rewrote test for namespace cleaning to not require namespace::clean, and
+    moved it from an author test to a normal test
+  - removed namespace::autoclean from developer prereqs
+
 2.002_002 - 2021-01-03
   - refactored some internals for subclasses to use
   - methods_provided_by will ensure the module is loaded before checking for
