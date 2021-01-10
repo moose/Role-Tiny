@@ -17,9 +17,11 @@ my %META = (
         'Class::Method::Modifiers' => '1.05',
       },
     },
-    develop => { recommends => {
-      'Class::Method::Modifiers' => '1.05',
-    } },
+    develop => {
+      requires => {
+        'Class::Method::Modifiers' => '1.05',
+      },
+    },
   },
   resources => {
     repository => {
@@ -42,10 +44,7 @@ my %META = (
 my $xt = $ENV{EXTENDED_TESTING};
 my %MM_ARGS = (
   ($xt ? (
-    TEST_REQUIRES => {
-      %{ $META{prereqs}{runtime}{recommends} },
-      %{ $META{prereqs}{develop}{recommends} },
-    },
+    TEST_REQUIRES => { %{ $META{prereqs}{develop}{requires} } },
     test => { TESTS => 't/*.t xt/*.t' },
   ):()),
 );
