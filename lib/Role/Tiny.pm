@@ -484,6 +484,20 @@ sub _install_does {
   return *{_getglob "${to}::DOES"} = $new_sub;
 }
 
+# optimize for newer perls
+require mro
+  if "$]" >= 5.009_005;
+
+if (defined &mro::get_linear_isa) {
+  *_linear_isa = \&mro::get_linear_isa;
+}
+else {
+  my $e;
+  {
+    local $@;
+# this routine is simplified and not fully compatible with mro::get_linear_isa
+# but for our use the order doesn't matter, so we don't need to care
+    eval <<'END_CODE' or $e = $@;
 sub _linear_isa($;$) {
   if (defined &mro::get_linear_isa) {
     no warnings 'redefine', 'prototype';
@@ -496,18 +510,18 @@ sub _linear_isa($;$) {
 
   my %found;
   while (defined(my $check = shift @check)) {
-      push @lin, $check;
-      no strict 'refs';
-      unshift @check, grep !$found{$_}++, @{"$check\::ISA"};
+    push @lin, $check;
+    no strict 'refs';
+    unshift @check, grep !$found{$_}++, @{"$check\::ISA"};
   }
 
   return \@lin;
 }
 
-# use core function when possible
-if (defined &mro::get_linear_isa) {
-  no warnings 'redefine', 'prototype';
-  *_linear_isa = \&mro::get_linear_isa;
+1;
+END_CODE
+  }
+  die $e if defined $e;
 }
 
 sub does_role {
