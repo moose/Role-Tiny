@@ -197,6 +197,7 @@ sub _composite_name {
 sub create_class_with_roles {
   my ($me, $superclass, @roles) = @_;
 
+  $me->_require_module($superclass);
   $me->_check_roles(@roles);
 
   my $new_name = $me->_composite_name($superclass, @roles);
