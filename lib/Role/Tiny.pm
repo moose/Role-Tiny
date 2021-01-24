@@ -2,7 +2,7 @@ package Role::Tiny;
 use strict;
 use warnings;
 
-our $VERSION = '2.002003';
+our $VERSION = '2.002004';
 $VERSION =~ tr/_//d;
 
 our %INFO;
