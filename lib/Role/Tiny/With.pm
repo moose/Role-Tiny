@@ -8,7 +8,9 @@ $VERSION =~ tr/_//d;
 
 use Role::Tiny ();
 
-use Exporter 'import';
+use Exporter ();
+*import = \&Exporter::import;
+
 our @EXPORT = qw( with );
 
 sub with {
