@@ -1,5 +1,4 @@
 package Role::Tiny::With;
-
 use strict;
 use warnings;
 
