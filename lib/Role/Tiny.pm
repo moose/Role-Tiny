@@ -83,8 +83,14 @@ sub import {
   my $me = shift;
   strict->import;
   warnings->import;
+  $me->init_role($target, @_);
+}
+
+sub init_role {
+  my ($me, $target, @args) = @_;
+
   my $non_methods = $me->_non_methods($target);
-  $me->_install_subs($target, @_);
+  $me->_install_subs($target, @args);
   $me->make_role($target);
   $me->_mark_new_non_methods($target, $non_methods)
     if $non_methods && %$non_methods;
