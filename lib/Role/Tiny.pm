@@ -495,7 +495,10 @@ sub _install_does {
 require mro
   if "$]" >= 5.009_005;
 
+sub _linear_isa($;$);
+
 if (defined &mro::get_linear_isa) {
+  no warnings 'prototype';
   *_linear_isa = \&mro::get_linear_isa;
 }
 else {
