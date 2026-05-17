@@ -1,5 +1,6 @@
 Revision history for Role-Tiny
 
+2.002005 - 2026-05-17
   - split role initialization from setting pragmas to allow more flexibility
     for subclasses
   - ensure consistent internal handling of Class::C3 vs mro
